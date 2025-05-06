@@ -58,7 +58,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
         let n = unsafe { &*(normalizer as usize as *const NormalizerWrapper) };
         builder = builder.with_normalizer(Some(n.clone()));
     }
-    if let Some(pre_tokenizer) = params.normalizer {
+    if let Some(pre_tokenizer) = params.pre_tokenizer {
         let pt = unsafe { &*(pre_tokenizer as usize as *const PreTokenizerWrapper) };
         builder = builder.with_pre_tokenizer(Some(pt.clone()));
     }
