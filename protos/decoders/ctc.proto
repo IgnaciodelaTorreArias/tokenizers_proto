@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package messages.decoders;
+
+message Ctc {
+  // Defaults: '<pad>'
+  optional string pad_token = 1;
+  // Defaults: '|'
+  optional string word_delimiter_token = 2;
+  // Defaults: true
+  optional bool cleanup = 3;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+message Nfd{}
+message Nfkd{}
+message Nfc{}
+message Nfkc{}
+message Nmt{}

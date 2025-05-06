@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package messages.decoders;
+
+message WordPiece {
+  // Defaults: '##'
+  optional string prefix = 1;
+  // Defaults: true
+  optional bool cleanup = 2;
+}

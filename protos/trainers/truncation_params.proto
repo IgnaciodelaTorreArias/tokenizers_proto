@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+enum TruncationDirection {
+  UNKNOWN_TruncationDirection = 0;
+  LEFT_TRUNCATION = 1;
+  RIGHT_TRUNCATION = 2;
+}
+
+enum TruncationStrategy {
+  UNKNOWN_TruncationStrategy = 0;
+  LONGEST_FIRST = 1;
+  ONLY_FIRST = 2;
+  ONLY_SECOND = 3;
+}
+
+message TruncationParams{
+  // Defaults: RIGHT_TRUNCATION
+  optional TruncationDirection direction = 1;
+  // Defaults: 512
+  optional uint64 max_length = 2;
+  // Defaults: LONGEST_FIRST
+  optional TruncationStrategy strategy = 3;
+  // Defaults: 0
+  optional uint64 stride = 4;
+}

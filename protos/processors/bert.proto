@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package messages.processors;
+
+message BertProcessing {
+  // Defaults: '[SEP]'
+  // if set, all other fields must be also set
+  optional string sep_str = 1;
+  // Defaults: 102
+  // if set, all other fields must be also set
+  optional uint32 sep_id = 2;
+  // Defaults: '[CLS]'
+  // if set, all other fields must be also set
+  optional string cls_str = 3;
+  // Defaults: 101
+  // if set, all other fields must be also set
+  optional uint32 cls_id = 4;
+}

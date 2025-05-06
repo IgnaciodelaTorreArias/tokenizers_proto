@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+message Precompiled{
+  bytes precompiled_charsmap = 1;
+}

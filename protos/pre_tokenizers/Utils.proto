@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package messages.pre_tokenizers;
+
+enum SplitDelimiterBehavior {
+  UNKNOWN_BEHAVIOR = 0;
+  REMOVED = 1;
+  ISOLATED = 2;
+  MERGED_WITH_PREVIOUS = 3;
+  MERGED_WITH_NEXT = 4;
+  CONTIGUOUS = 5;
+}
+
+message Whitespace{}
+
+message WhitespaceSplit{}
+
+message Delimiter{
+  // single character
+  string char = 1;
+}
+
+message Split {
+  string pattern = 1;
+  SplitDelimiterBehavior behavior = 2;
+  bool invert = 3;
+}
+
+message Punctuation {
+  // Defaults: ISOLATED
+  optional SplitDelimiterBehavior behavior = 1;
+}
+
+message Digits {
+  // Defaults: false
+  optional bool individual_digits = 1;
+}

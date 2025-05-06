@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+import "utils.proto";
+
+message UnigramTrainer {
+  // Defaults: true
+  optional bool show_progress = 1;
+  // Defaults: 8_000
+  optional uint32 vocab_size = 2;
+  // Defaults: 2
+  optional uint32 n_sub_iterations =3;
+  // Defaults: 0.75
+  optional double shrinking_factor = 4;
+  // Defaults: []
+  repeated messages.AddedToken special_tokens = 5;
+  // characters should be unique, this is converted to a set of characters
+  // Defaults: []
+  optional string initial_alphabet = 6;
+  // Defaults: None
+  optional string unk_token = 7;
+  // Defaults: 16
+  optional uint64 max_piece_length = 8;
+}

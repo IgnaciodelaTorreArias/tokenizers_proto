@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+import "utils.proto";
+
+message BpeTrainer {
+  // Defaults: 0
+  optional uint64 min_frequency = 1;
+  // Defaults: 30_000
+  optional uint64 vocab_size = 2;
+  // Defaults: true
+  optional bool show_progress = 3;
+  // Defaults: []
+  repeated messages.AddedToken special_tokens = 4;
+  // Defaults: None
+  optional uint64 limit_alphabet = 5;
+  // characters should be unique, this is converted to a set of characters
+  // Defaults: []
+  optional string initial_alphabet = 6;
+  // Defaults: None
+  optional string continuing_subword_prefix = 7;
+  // Defaults: None
+  optional string end_of_word_suffix = 8;
+  // Defaults: None
+  optional uint64 max_token_length = 9;
+}

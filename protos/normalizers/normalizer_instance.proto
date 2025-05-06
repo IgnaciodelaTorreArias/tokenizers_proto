@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+import "normalizers/bert.proto";
+import "normalizers/unicode.proto";
+import "normalizers/utils.proto";
+import "normalizers/precompiled.proto";
+import "normalizers/byte_level.proto";
+
+// Sequence
+import "utils.proto";
+
+message NormalizerWrapperParams{
+  // requiere
+  oneof params{
+    // Bert.proto
+    BertNormalizer bert_normalizer = 1;
+    // Unicode.proto
+    Nfd nfd = 2;
+    // Unicode.proto
+    Nfkd nfkd = 3;
+    // Unicode.proto
+    Nfc nfc = 4;
+    // Unicode.proto
+    Nfkc nfkc = 5;
+    // Unicode.proto
+    Nmt nmt = 6;
+    // Utils.proto
+    StripNormalizer strip_normalizer = 7;
+    // Utils.proto
+    StripAccents strip_accents = 8;
+    // protos/Utils.proto
+    messages.Sequence sequence = 9;
+    // Utils.proto
+    Lowercase lowercase = 10;
+    // Utils.proto
+    Prepend prepend = 11;
+    // Utils.proto
+    Replace replace = 12;
+    //Precompiled.proto
+    Precompiled precompiled = 13;
+    // ByteLevel.proto
+    ByteLevel byte_level = 14;
+  }
+}
+

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package messages.processors;
+
+import "processors/roberta.proto";
+import "processors/bert.proto";
+import "pre_tokenizers/byte_level.proto";
+import "processors/template.proto";
+
+message Params {
+  // requiere
+  oneof params {
+    RobertaProcessing roberta_processing = 1;
+    BertProcessing bert_processing = 2;
+    messages.pre_tokenizers.ByteLevel byte_level = 3;
+    TemplateProcessing template_processing= 4;
+  }
+}
+
+message ProcessorWrapperParams {
+  repeated Params params = 1;
+}

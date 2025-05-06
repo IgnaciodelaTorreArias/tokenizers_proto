@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package messages.tokenizer;
+
+import "utils.proto";
+
+message EncodeParams {
+  string input = 1;
+  optional string input2 = 2;
+  bool add_special_tokens = 3;
+
+  // Expected response fields, this helps avoiding `over fetching`
+
+  // Defaults: false
+  optional bool include_type_ids = 4;
+  // Defaults: false
+  optional bool include_tokens = 5;
+  // Defaults: false
+  optional bool include_words = 6;
+  // Defaults: false
+  optional bool include_offsets = 7;
+  // Defaults: false
+  optional bool include_special_tokens_mask = 8;
+  // Defaults: false
+  optional bool include_attention_mask = 9;
+  // Defaults: false
+  optional bool include_overflowing = 10;
+}
+
+message EncodeResult {
+  // first value is the result, the rest is the overflowing if `include_overflowing` is set to true
+  repeated Encoding encodings = 1;
+}
+
+message Encoding {
+  repeated uint32 ids = 1;
+  repeated uint32 type_ids = 2;
+  repeated string tokens = 3;
+  repeated uint32 words = 4;
+  repeated messages.Offsets offsets = 5;
+  repeated uint32 special_tokens_mask = 6;
+  repeated uint32 attention_mask =7;
+}
+
+message DecodeParams {
+  repeated uint32 ids = 1;
+  bool skip_special_tokens = 2;
+}
+
+message DecodeResult {
+  string decoded = 1;
+}
+
+message TokenizerFromFile {
+  string file = 1;
+}

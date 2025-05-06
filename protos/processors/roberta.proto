@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package messages.processors;
+
+message RobertaProcessing {
+  // Defaults: '</s>'
+  // if set, then sep_id, cls_str, cls_id, must also be set
+  optional string sep_str = 1;
+  // Defaults: 2
+  // if set, then sep_str, cls_str, cls_id, must also be set
+  optional uint32 sep_id = 2;
+  // Defaults: '<s>'
+  // if set, then sep_str, sep_id, cls_id, must also be set
+  optional string cls_str = 3;
+  // Defaults: 0
+  // if set, then sep_str, sep_id, cls_str, must also be set
+  optional uint32 cls_id = 4;
+  // Defaults: true
+  optional bool trim_offsets = 5;
+  // Defaults: true
+  optional bool add_prefix_space = 6;
+}

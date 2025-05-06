@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package messages.processors;
+
+message TemplateProcessing {
+  // Defaults: '$0'
+  optional string single = 1;
+  // Defaults: '$A:0 $B:1'
+  optional string pair = 2;
+  // Defaults: 0
+  optional uint64 added_single = 3;
+  // Defaults: 0
+  optional uint64 added_pair = 4;
+  map<string, uint32> special_tokens = 5;
+}

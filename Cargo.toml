@@ -1,0 +1,22 @@
+[package]
+name = "tokenizers_proto"
+version = "0.1.0"
+edition = "2024"
+authors = [ "Ignacio de la Torre <ignaciodlta@gmail.com>" ]
+description = "Expose huggingface/tokenizers as a dynamic library with a minimal C ABI using only primitive types (i32, raw pointers) and Protocol Buffers for structured input/output."
+readme = "README.md"
+license = "Apache-2.0"
+
+[dependencies]
+prost = "0.13.5"
+tokenizers = "0.21.1"
+
+[build-dependencies]
+prost-build = "0.13.5"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+strip = "symbols"
+lto = true

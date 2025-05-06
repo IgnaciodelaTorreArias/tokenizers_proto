@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+import "trainers/bpe.proto";
+import "trainers/unigram.proto";
+import "trainers/word_level.proto";
+import "trainers/word_piece.proto";
+
+import "processors/processor.proto";
+import "decoders/decoder.proto";
+
+import "trainers/truncation_params.proto";
+import "trainers/padding_params.proto";
+
+message TrainerParams {
+  // Memory address pointing to a NormalizerWrapper
+  optional uint64 normalizer = 1;
+  // Memory address pointing to a PreTokenizerWrapper
+  optional uint64 pre_tokenizer = 2;
+  oneof trainer {
+    BpeTrainer bpe_trainer = 3;
+    WordPieceTrainer word_piece_trainer = 4;
+    WordLevelTrainer word_level_trainer = 5;
+    UnigramTrainer unigram_trainer = 6;
+  };
+  optional messages.processors.ProcessorWrapperParams processor = 7;
+  optional messages.decoders.DecoderWrapperParams decoder = 8;
+  optional TruncationParams truncation = 9;
+  optional PaddingParams padding = 10;
+  repeated string files = 11;
+  string save_path = 12;
+  // Defaults: false
+  optional bool pretty = 13;
+}

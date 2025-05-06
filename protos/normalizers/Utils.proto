@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+message StripAccents{}
+
+message StripNormalizer{
+  bool strip_left = 1;
+  bool strip_right = 2;
+}
+
+message Lowercase{}
+
+message Prepend{
+  string prepend = 1;
+}
+
+message Replace{
+  string pattern = 1;
+  string content = 2;
+}

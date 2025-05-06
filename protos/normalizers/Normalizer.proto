@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+message NormalizeParams{
+  string original = 1;
+}
+
+message NormalizeResult{
+  string normalized = 1;
+}

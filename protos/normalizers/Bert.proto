@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+message BertNormalizer{
+  // Defaults: true
+  optional bool clean_text = 1;
+  // Defaults: true
+  optional bool handle_chinese_chars = 2;
+  // Defaults: using the same value as lowercase
+  optional bool strip_accents = 3;
+  // Defaults: true
+  optional bool lowercase = 4;
+}

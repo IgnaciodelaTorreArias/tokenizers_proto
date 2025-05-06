@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+enum PaddingStrategy {
+  UNKNOWN_PaddingStrategy = 0;
+  BATCH_LONGEST = 1;
+  FIXED = 2;
+}
+
+enum PaddingDirection{
+  UNKNOWN_PaddingDirection = 0;
+  LEFT_PADDING = 1;
+  RIGHT_PADDING = 2;
+}
+
+message PaddingParams {
+  // Defaults: BATCH_LONGEST
+  optional PaddingStrategy strategy = 1;
+  // Used when strategy is set to FIXED
+  optional uint64 fixed_len = 2;
+  // Defaults: RIGHT_PADDING
+  optional PaddingDirection direction = 3;
+  // Defaults: None
+  optional uint64 pad_to_multiple_of = 4;
+  // Defaults: 0
+  optional uint32 pad_id = 5;
+  // Defaults: 0
+  optional uint32 pad_type_id = 6;
+  // Defaults: '[PAD]'
+  optional string pad_token = 7;
+}

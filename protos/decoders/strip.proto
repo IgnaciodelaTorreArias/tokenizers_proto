@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package messages.decoders;
+
+message Strip {
+  // single character
+  string content = 1;
+  uint64 start = 2;
+  uint64 stop = 3;
+}

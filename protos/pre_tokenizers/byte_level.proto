@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package messages.pre_tokenizers;
+
+message ByteLevel {
+  // Defaults: true
+  optional bool add_prefix_space = 1;
+  // Defaults: true
+  optional bool trim_offsets = 2;
+  // Defaults: true
+  optional bool use_regex = 3;
+}

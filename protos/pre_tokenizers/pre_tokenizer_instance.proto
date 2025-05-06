@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package messages.pre_tokenizers;
+
+import "pre_tokenizers/bert.proto";
+import "pre_tokenizers/byte_level.proto";
+import "pre_tokenizers/metaspace.proto";
+import "pre_tokenizers/utils.proto";
+import "pre_tokenizers/unicode_scripts.proto";
+
+import "utils.proto";
+
+message PreTokenizerWrapperParams{
+  // requiere
+  oneof params {
+    // Bert.proto
+    BertPreTokenizer bert_pre_tokenizer = 1;
+    // ByteLevel.proto
+    ByteLevel byte_level = 2;
+    // Metaspace.proto
+    Metaspace metaspace = 3;
+    // Utils.proto
+    Whitespace whitespace = 4;
+    // Utils.proto
+    WhitespaceSplit whitespace_split = 5;
+    // Utils.proto
+    Delimiter delimiter = 6;
+    // protos/Utils.proto
+    messages.Sequence sequence = 7;
+    // Utils.proto
+    Split split = 8;
+    // Utils.proto
+    Punctuation punctuation = 9;
+    // Utils.proto
+    Digits digits = 10;
+    // UnicodeScripts.proto
+    UnicodeScripts unicode_scripts = 11;
+  }
+}
