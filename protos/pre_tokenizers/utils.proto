@@ -21,7 +21,11 @@ message Delimiter{
 }
 
 message Split {
-  string pattern = 1;
+  // requiere
+  oneof pattern{
+    string string_split = 1;
+    string regex_split = 4;
+  }
   SplitDelimiterBehavior behavior = 2;
   bool invert = 3;
 }
@@ -34,4 +38,9 @@ message Punctuation {
 message Digits {
   // Defaults: false
   optional bool individual_digits = 1;
+}
+
+message FixedLength {
+  // Defaults: 5
+  optional uint64 length = 1;
 }

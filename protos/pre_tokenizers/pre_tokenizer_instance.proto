@@ -35,5 +35,7 @@ message PreTokenizerWrapperParams{
     Digits digits = 10;
     // UnicodeScripts.proto
     UnicodeScripts unicode_scripts = 11;
+    // Utils.proto
+    FixedLength fixed_length = 12;
   }
 }

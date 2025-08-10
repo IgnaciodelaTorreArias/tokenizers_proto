@@ -2,7 +2,35 @@ syntax = "proto3";
 
 package messages.processors;
 
+message SpecialToken {
+  string token = 1;
+  repeated uint32 ids = 2;
+  repeated string tokens = 3;
+}
+
+message TokenPair {
+  string token = 1;
+  uint32 token_id = 2;
+}
+
+message Token {
+  // requiere
+  oneof token {
+    SpecialToken special_token = 1;
+    TokenPair token_pair = 2;
+  }
+}
+
+message TokensMap {
+  map<string,Token> tokens = 1;
+}
+
+message Tokens {
+  repeated Token tokens = 1;
+}
+
 message TemplateProcessing {
+  reserved 5;
   // Defaults: '$0'
   optional string single = 1;
   // Defaults: '$A:0 $B:1'
@@ -11,5 +39,8 @@ message TemplateProcessing {
   optional uint64 added_single = 3;
   // Defaults: 0
   optional uint64 added_pair = 4;
-  map<string, uint32> special_tokens = 5;
+  oneof special_tokens{
+    TokensMap tokens_map = 6;
+    Tokens tokens = 7;
+  }
 }

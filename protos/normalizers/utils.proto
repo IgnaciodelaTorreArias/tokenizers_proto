@@ -16,6 +16,10 @@ message Prepend{
 }
 
 message Replace{
-  string pattern = 1;
+  // requiere
+  oneof pattern{
+    string string_replacement = 1;
+    string regex_replacement = 3;
+  }
   string content = 2;
 }

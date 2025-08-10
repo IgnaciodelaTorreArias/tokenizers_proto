@@ -5,8 +5,8 @@ use tokenizers::{
 use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::general_utils::get_sequence;
 use crate::messages::pre_tokenizers::{
-    self, OffsetReferential as OR, OffsetType as OT, PreTokenizeResult,
-    PreTokenizerWrapperParams, pre_tokenizer_wrapper_params::Params,
+    self, OffsetReferential as OR, OffsetType as OT, PreTokenizeResult, PreTokenizerWrapperParams,
+    pre_tokenizer_wrapper_params::Params,
 };
 use crate::messages::{self, CallStatus, ConversionError, Offsets};
 
@@ -142,6 +142,7 @@ fn get_pre_tokenizer(pre_tokenizer: Params) -> Result<PreTokenizerWrapper, Conve
         Params::Punctuation(params) => params.try_into()?,
         Params::Digits(params) => params.into(),
         Params::UnicodeScripts(params) => params.into(),
+        Params::FixedLength(params) => params.into(),
     })
 }
 
