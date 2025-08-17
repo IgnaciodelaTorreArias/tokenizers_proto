@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 env:
-  PROTOC_VERSION: 32.0
+  PROTOC_VERSION: "32.0"
 
 jobs:
   build-windows:
