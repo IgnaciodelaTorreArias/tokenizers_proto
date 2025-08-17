@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.runtime }}
-          path: .\target\${{ matrix.target }}\release\tokenizers_protos.dll
+          path: .\target\${{ matrix.target }}\release\tokenizers_proto.dll
 
   build-linux:
     runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.runtime }}
-          path: target/${{ matrix.target }}/release/libtokenizers.so
+          path: target/${{ matrix.target }}/release/libtokenizers_proto.so
 
   build-darwin:
     runs-on: macos-latest
@@ -144,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.runtime }}
-          path: target/${{ matrix.target }}/release/libmy_rust_protos.dylib
+          path: target/${{ matrix.target }}/release/libtokenizers_proto.dylib
 
   publish:
     runs-on: ubuntu-latest
