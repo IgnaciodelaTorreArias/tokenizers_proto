@@ -174,7 +174,6 @@ fn get_processor(
         .into_iter()
         .filter_map(|params| params.params)
         .map(|params| match_processor(params))
-        .map(|s| s)
         .collect();
     Ok(match r {
         Ok(mut v) => {
@@ -208,11 +207,10 @@ fn get_decoder(
         .into_iter()
         .filter_map(|params| params.params)
         .map(|params| match_decoder(params))
-        .map(|s| s)
         .collect();
     Ok(match r {
         Ok(mut v) => {
-            if v.len() <= 0 {
+            if v.len() <= 1 {
                 v.pop()
             } else {
                 Some(tokenizers::decoders::sequence::Sequence::new(v).into())
