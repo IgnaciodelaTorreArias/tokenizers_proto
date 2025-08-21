@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Because can be used as decoder
+option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
+
+package messages.normalizers;
+
+message Replace{
+  // requiere
+  oneof pattern{
+    string string_replacement = 1;
+    string regex_replacement = 3;
+  }
+  string content = 2;
+}

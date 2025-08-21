@@ -7,6 +7,7 @@ package messages.normalizers;
 import "normalizers/bert.proto";
 import "normalizers/unicode.proto";
 import "normalizers/utils.proto";
+import "normalizers/replace.proto";
 import "normalizers/precompiled.proto";
 import "normalizers/byte_level.proto";
 
@@ -38,7 +39,7 @@ message NormalizerWrapperParams{
     Lowercase lowercase = 10;
     // Utils.proto
     Prepend prepend = 11;
-    // Utils.proto
+    // replace.proto
     Replace replace = 12;
     //Precompiled.proto
     Precompiled precompiled = 13;

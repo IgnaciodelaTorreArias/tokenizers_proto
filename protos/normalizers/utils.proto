@@ -16,12 +16,3 @@ message Lowercase{}
 message Prepend{
   string prepend = 1;
 }
-
-message Replace{
-  // requiere
-  oneof pattern{
-    string string_replacement = 1;
-    string regex_replacement = 3;
-  }
-  string content = 2;
-}

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
+// Because can be used as decoder
+option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
 package messages.pre_tokenizers;
 
