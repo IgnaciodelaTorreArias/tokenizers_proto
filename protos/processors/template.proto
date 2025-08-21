@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option csharp_namespace = "Tokenizers.HuggingFace.Processors";
+
 package messages.processors;
 
 message SpecialToken {
@@ -30,7 +32,6 @@ message Tokens {
 }
 
 message TemplateProcessing {
-  reserved 5;
   // Defaults: '$0'
   optional string single = 1;
   // Defaults: '$A:0 $B:1'
@@ -40,7 +41,7 @@ message TemplateProcessing {
   // Defaults: 0
   optional uint64 added_pair = 4;
   oneof special_tokens{
-    TokensMap tokens_map = 6;
-    Tokens tokens = 7;
+    TokensMap tokens_map = 5;
+    Tokens tokens = 6;
   }
 }

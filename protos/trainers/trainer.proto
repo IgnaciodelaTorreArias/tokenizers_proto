@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
+
 package messages.trainers;
 
 import "trainers/bpe.proto";
@@ -13,23 +15,28 @@ import "decoders/decoder.proto";
 import "trainers/truncation_params.proto";
 import "trainers/padding_params.proto";
 
+message Params {
+  // requiere
+  oneof params {
+    BpeTrainer bpe_trainer = 1;
+    UnigramTrainer unigram_trainer = 2;
+    WordLevelTrainer word_level_trainer = 3;
+    WordPieceTrainer word_piece_trainer = 4;
+  }
+}
+
 message TrainerParams {
   // Memory address pointing to a NormalizerWrapper
   optional uint64 normalizer = 1;
   // Memory address pointing to a PreTokenizerWrapper
   optional uint64 pre_tokenizer = 2;
-  oneof trainer {
-    BpeTrainer bpe_trainer = 3;
-    WordPieceTrainer word_piece_trainer = 4;
-    WordLevelTrainer word_level_trainer = 5;
-    UnigramTrainer unigram_trainer = 6;
-  };
-  optional messages.processors.ProcessorWrapperParams processor = 7;
-  optional messages.decoders.DecoderWrapperParams decoder = 8;
-  optional TruncationParams truncation = 9;
-  optional PaddingParams padding = 10;
-  repeated string files = 11;
-  string save_path = 12;
+  Params trainer = 3;
+  optional messages.processors.ProcessorWrapperParams processor = 4;
+  optional messages.decoders.DecoderWrapperParams decoder = 5;
+  optional TruncationParams truncation = 6;
+  optional PaddingParams padding = 7;
+  repeated string files = 8;
+  string save_path = 9;
   // Defaults: false
-  optional bool pretty = 13;
+  optional bool pretty = 10;
 }

@@ -11,7 +11,7 @@ use crate::messages::decoders::params::Params as d_params;
 use crate::messages::processors;
 use crate::messages::processors::params::Params as p_params;
 use crate::messages::trainers;
-use crate::messages::trainers::trainer_params;
+use crate::messages::trainers::params;
 use crate::messages::{self, CallStatus, ConversionError};
 
 #[unsafe(no_mangle)]
@@ -39,7 +39,12 @@ pub unsafe extern "C" fn tokenizer_from_train(
         crate::set_empty_output!(out_ptr, out_len);
         return CallStatus::EmptyParams.into();
     }
-    let mut trainer: TrainerWrapper = match_trainer(params.trainer.unwrap());
+    let trainer_type = params.trainer.unwrap();
+    if trainer_type.params.is_none(){
+        crate::set_empty_output!(out_ptr, out_len);
+        return CallStatus::EmptyParams.into();
+    }
+    let mut trainer: TrainerWrapper = match_trainer(trainer_type.params.unwrap());
     let trained_model: ModelWrapper = match trainer {
         TrainerWrapper::BpeTrainer(_) => tkm::bpe::BPE::default().into(),
         TrainerWrapper::WordPieceTrainer(_) => tkm::wordpiece::WordPiece::default().into(),
@@ -154,12 +159,12 @@ pub unsafe extern "C" fn tokenizer_from_train(
     CallStatus::Ok.into()
 }
 
-fn match_trainer(selected_trainer: trainer_params::Trainer) -> TrainerWrapper {
+fn match_trainer(selected_trainer: params::Params) -> TrainerWrapper {
     match selected_trainer {
-        trainer_params::Trainer::BpeTrainer(params) => params.into(),
-        trainer_params::Trainer::WordPieceTrainer(params) => params.into(),
-        trainer_params::Trainer::WordLevelTrainer(params) => params.into(),
-        trainer_params::Trainer::UnigramTrainer(params) => params.into(),
+        params::Params::BpeTrainer(params) => params.into(),
+        params::Params::WordPieceTrainer(params) => params.into(),
+        params::Params::WordLevelTrainer(params) => params.into(),
+        params::Params::UnigramTrainer(params) => params.into(),
     }
 }
 

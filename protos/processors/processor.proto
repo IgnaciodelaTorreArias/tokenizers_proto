@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option csharp_namespace = "Tokenizers.HuggingFace.Processors";
+
 package messages.processors;
 
 import "processors/roberta.proto";
