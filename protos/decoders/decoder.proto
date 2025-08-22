@@ -9,7 +9,7 @@ import "pre_tokenizers/byte_level.proto";
 import "decoders/word_piece.proto";
 import "pre_tokenizers/metaspace.proto";
 import "decoders/ctc.proto";
-import "normalizers/utils.proto";
+import "normalizers/replace.proto";
 import "decoders/fuse.proto";
 import "decoders/strip.proto";
 import "decoders/byte_fallback.proto";
