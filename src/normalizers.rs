@@ -1,9 +1,9 @@
-use tokenizers::{NormalizedString, Normalizer, NormalizerWrapper};
+use tokenizers::{Normalizer, NormalizerWrapper, PreTokenizedString};
 
 use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::general_utils::get_sequence;
 use crate::messages::normalizers::{
-    self, NormalizerWrapperParams, normalizer_wrapper_params::Params,
+    NormalizeParams, NormalizerWrapperParams, normalizer_wrapper_params::Params,
 };
 use crate::messages::{self, CallStatus, ConversionError};
 
@@ -15,16 +15,40 @@ pub unsafe extern "C" fn normalize(
     out_ptr: *mut *mut u8,
     out_len: *mut usize,
 ) -> i32 {
-    let params = match get_call_message::<normalizers::NormalizeParams>(ptr, len) {
+    let params = match get_call_message::<NormalizeParams>(ptr, len) {
         Ok(msg) => msg,
         Err(_) => {
             crate::set_empty_output!(out_ptr, out_len);
             return CallStatus::DecodeError.into();
         }
     };
-    let mut normalized = NormalizedString::from(params.original);
-    let normalizer = unsafe { &*(instance_ptr as *mut dyn Normalizer) };
-    if let Err(e) = normalizer.normalize(&mut normalized) {
+    let pre_tokenized_string = match unsafe { (params.pipeline_string as *mut PreTokenizedString).as_mut() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+                messages::Error {
+                    details: "Invalid PreTokenizedString pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        }
+    };
+    let normalizer = match unsafe { instance_ptr.as_ref() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+            messages::Error {
+                    details: "Invalid normalizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        },
+    };
+    if let Err(e) = pre_tokenized_string.normalize(|s| normalizer.normalize(s)) {
         set_call_result(
             messages::Error {
                 details: e.to_string(),
@@ -34,13 +58,7 @@ pub unsafe extern "C" fn normalize(
         );
         return CallStatus::NormalizationErrorDetails.into();
     };
-    set_call_result(
-        normalizers::NormalizeResult {
-            normalized: normalized.get().to_string(),
-        },
-        out_ptr,
-        out_len,
-    );
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 
@@ -77,6 +95,7 @@ pub unsafe extern "C" fn new_normalizer_wrapper(
     unsafe {
         *instance_ptr = Box::into_raw(normalizer_wrapper);
     }
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 

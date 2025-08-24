@@ -1,6 +1,43 @@
 include!(concat!(env!("OUT_DIR"), "/messages.rs"));
 // Error while Converting the defined instance to a concrete instance
 pub(crate) type ConversionError = (CallStatus, Option<String>);
+pub(crate) mod pipeline_string {
+    use super::CallStatus;
+    use super::ConversionError;
+
+    include!(concat!(env!("OUT_DIR"), "/messages.pipeline_string.rs"));
+
+    impl Into<tokenizers::pre_tokenizer::PreTokenizedString> for PipelineStringParams {
+        fn into(self) -> tokenizers::pre_tokenizer::PreTokenizedString {
+            self.content.into()
+        }
+    }
+    impl TryInto<tokenizers::normalizer::OffsetReferential> for OffsetReferential {
+        type Error = ConversionError;
+        
+        fn try_into(self) -> Result<tokenizers::normalizer::OffsetReferential, Self::Error> {
+            use tokenizers::normalizer::OffsetReferential;
+            Ok(match self {
+                Self::UnknownReferential => return Err((CallStatus::UnknownEnumValue, None)),
+                Self::Original => OffsetReferential::Original,
+                Self::Normalized => OffsetReferential::Normalized,
+            })
+        }
+    }
+    impl TryInto<tokenizers::pre_tokenizer::OffsetType> for OffsetType{
+        type Error = ConversionError;
+        
+        fn try_into(self) -> Result<tokenizers::pre_tokenizer::OffsetType, Self::Error> {
+            use tokenizers::pre_tokenizer::OffsetType;
+            Ok(match self {
+                Self::UnknownType => return Err((CallStatus::UnknownEnumValue, None)),
+                Self::Byte => OffsetType::Byte,
+                Self::Char => OffsetType::Char,
+                Self::None => OffsetType::None,
+            })
+        }
+    }
+}
 pub(crate) mod normalizers {
     use super::CallStatus;
     use super::ConversionError;
@@ -185,17 +222,10 @@ pub(crate) mod pre_tokenizers {
         type Error = ConversionError;
 
         fn try_into(self) -> Result<tokenizers::pre_tokenizers::metaspace::Metaspace, Self::Error> {
-            use super::pre_tokenizers::PrependScheme;
             use tokenizers::pre_tokenizers::metaspace::Metaspace;
             let mut d = Metaspace::default();
-            if let Some(prepend_scheme) = self.prepend_scheme {
-                let prepend_scheme = match PrependScheme::try_from(prepend_scheme) {
-                    Ok(res) => res,
-                    Err(_) => {
-                        return Err((CallStatus::UnknownEnumValue, None));
-                    }
-                };
-                d.prepend_scheme = prepend_scheme.try_into()?;
+            if self.prepend_scheme.is_some() {
+                d.prepend_scheme = self.prepend_scheme().try_into()?;
             }
             if let Some(replacement) = self.replacement_char {
                 let replacement = match replacement.chars().next() {
@@ -280,19 +310,19 @@ pub(crate) mod pre_tokenizers {
         type Error = ConversionError;
 
         fn try_into(self) -> Result<tokenizers::pre_tokenizers::PreTokenizerWrapper, Self::Error> {
-            use super::pre_tokenizers::SplitDelimiterBehavior as SDB;
+            use tokenizers::normalizer::SplitDelimiterBehavior;
             use tokenizers::pre_tokenizers::split::{Split, SplitPattern};
 
-            let behavior = match SDB::try_from(self.behavior) {
-                Ok(res) => res,
-                Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-            };
-            let pattern = match self.pattern.unwrap() {
-                split::Pattern::StringSplit(s) => SplitPattern::String(s),
-                split::Pattern::RegexSplit(s) => SplitPattern::Regex(s),
+            let behavior: SplitDelimiterBehavior = self.behavior().try_into()?;
+            let pattern = match self.pattern {
+                Some(pattern) => match pattern {
+                    split::Pattern::StringSplit(s) => SplitPattern::String(s),
+                    split::Pattern::RegexSplit(s) => SplitPattern::Regex(s),
+                },
+                None => return Err((CallStatus::InvalidArgumentsDetails, Some("Pattern cannot be empty".to_string()))),
             };
             Ok(
-                match Split::new(pattern, behavior.try_into()?, self.invert) {
+                match Split::new(pattern, behavior, self.invert) {
                     Ok(res) => res,
                     Err(e) => {
                         return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
@@ -306,14 +336,10 @@ pub(crate) mod pre_tokenizers {
         type Error = ConversionError;
 
         fn try_into(self) -> Result<tokenizers::pre_tokenizers::PreTokenizerWrapper, Self::Error> {
-            use super::pre_tokenizers::SplitDelimiterBehavior as SDB;
             use tokenizers::pre_tokenizers::punctuation::Punctuation;
             let mut d = Punctuation::default();
-            if let Some(behavior) = self.behavior {
-                d.behavior = match SDB::try_from(behavior) {
-                    Ok(res) => res.try_into()?,
-                    Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-                };
+            if self.behavior.is_some() {
+                d.behavior = self.behavior().try_into()?;
             }
             Ok(d.into())
         }
@@ -668,23 +694,16 @@ pub(crate) mod trainers {
         type Error = ConversionError;
 
         fn try_into(self) -> Result<tokenizers::utils::truncation::TruncationParams, Self::Error> {
-            use super::trainers::{TruncationDirection, TruncationStrategy};
             use tokenizers::utils::truncation::TruncationParams;
             let mut d = TruncationParams::default();
-            if let Some(direction) = self.direction {
-                d.direction = match TruncationDirection::try_from(direction) {
-                    Ok(res) => res.try_into()?,
-                    Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-                };
+            if self.direction.is_some() {
+                d.direction = self.direction().try_into()?;
             }
             if let Some(max_length) = self.max_length {
                 d.max_length = max_length as usize;
             }
-            if let Some(strategy) = self.strategy {
-                d.strategy = match TruncationStrategy::try_from(strategy) {
-                    Ok(res) => res.try_into()?,
-                    Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-                };
+            if self.strategy.is_some() {
+                d.strategy = self.strategy().try_into()?;
             }
             if let Some(stride) = self.stride {
                 d.stride = stride as usize;
@@ -708,33 +727,25 @@ pub(crate) mod trainers {
         type Error = ConversionError;
 
         fn try_into(self) -> Result<tokenizers::utils::padding::PaddingParams, Self::Error> {
-            use super::trainers::{PaddingDirection, PaddingStrategy};
+            use super::trainers::PaddingStrategy;
             use tokenizers::utils::padding::{PaddingParams, PaddingStrategy as PS};
             let mut d = PaddingParams::default();
 
-            if let Some(strategy) = self.strategy {
-                d.strategy = match PaddingStrategy::try_from(strategy) {
-                    Ok(res) => match res {
-                        PaddingStrategy::UnknownPaddingStrategy => {
-                            return Err((CallStatus::UnknownEnumValue, None));
+            if self.strategy.is_some() {
+                d.strategy = match self.strategy() {
+                    PaddingStrategy::UnknownPaddingStrategy => return Err((CallStatus::UnknownEnumValue, None)),
+                    PaddingStrategy::BatchLongest => PS::BatchLongest,
+                    PaddingStrategy::Fixed => {
+                        if let Some(fixed_len) = self.fixed_len {
+                            PS::Fixed(fixed_len as usize)
+                        } else {
+                            return Err((CallStatus::InvalidArgumentsDetails, Some("If the padding strategy is FIXED you must also set the field `fixed_len`".to_string())));
                         }
-                        PaddingStrategy::BatchLongest => PS::BatchLongest,
-                        PaddingStrategy::Fixed => {
-                            if let Some(fixed_len) = self.fixed_len {
-                                PS::Fixed(fixed_len as usize)
-                            } else {
-                                return Err((CallStatus::InvalidArgumentsDetails, Some("If the padding strategy is FIXED you must also set the field `fixed_len`".to_string())));
-                            }
-                        }
-                    },
-                    Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-                };
+                    }
+                }
             }
-            if let Some(direction) = self.direction {
-                d.direction = match PaddingDirection::try_from(direction) {
-                    Ok(res) => res.try_into()?,
-                    Err(_) => return Err((CallStatus::UnknownEnumValue, None)),
-                };
+            if self.direction.is_some() {
+                d.direction = self.direction().try_into()?;
             }
             if let Some(pad_to_multiple_of) = self.pad_to_multiple_of {
                 d.pad_to_multiple_of = Some(pad_to_multiple_of as usize);

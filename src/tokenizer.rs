@@ -1,6 +1,6 @@
 use tokenizers::tokenizer::{
     DecoderWrapper, ModelWrapper, NormalizerWrapper, PostProcessorWrapper, PreTokenizerWrapper,
-    Tokenizer, TokenizerImpl,
+    Tokenizer, TokenizerImpl, EncodeInput
 };
 
 use crate::buffer_utils::{get_call_message, set_call_result};
@@ -43,6 +43,7 @@ pub unsafe extern "C" fn tokenizer_from_file(
     };
     let p = Box::new(tk);
     unsafe { *instance_ptr = Box::into_raw(p) }
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 
@@ -67,7 +68,19 @@ pub unsafe extern "C" fn encode(
             return CallStatus::DecodeError.into();
         }
     };
-    let tokenizer = unsafe { &*instance_ptr };
+    let tokenizer = match unsafe { instance_ptr.as_ref() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+            messages::Error {
+                    details: "Invalid tokenizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        },
+    };
     let include_type_ids = params.include_type_ids.unwrap_or(false);
     let include_tokens = params.include_tokens.unwrap_or(false);
     let include_words = params.include_words.unwrap_or(false);
@@ -75,10 +88,15 @@ pub unsafe extern "C" fn encode(
     let include_special_tokens_mask = params.include_special_tokens_mask.unwrap_or(false);
     let include_attention_mask = params.include_attention_mask.unwrap_or(false);
     let include_overflowing = params.include_overflowing.unwrap_or(false);
-    let encoding = if let Some(input2) = params.input2 {
-        tokenizer.encode((params.input, input2), params.add_special_tokens)
+    let input: EncodeInput = if let Some(input2) = params.input2 {
+        (params.input, input2).into()
     } else {
-        tokenizer.encode(params.input, params.add_special_tokens)
+        params.input.into()
+    };
+    let encoding = if include_offsets {
+        tokenizer.encode(input, params.add_special_tokens)
+    } else {
+        tokenizer.encode_fast(input, params.add_special_tokens)
     };
     let mut original = match encoding {
         Ok(res) => res,
@@ -158,7 +176,19 @@ pub unsafe extern "C" fn decode(
             return CallStatus::DecodeError.into();
         }
     };
-    let tokenizer = unsafe { &*instance_ptr };
+    let tokenizer = match unsafe { instance_ptr.as_ref() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+            messages::Error {
+                    details: "Invalid tokenizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        },
+    };
     let decode_result = match tokenizer.decode(&params.ids, params.skip_special_tokens) {
         Ok(res) => res,
         Err(e) => {

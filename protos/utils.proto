@@ -6,7 +6,7 @@ package messages;
 
 message Sequence {
   // uses the memory address of the instances
-  repeated int64 addresses = 1;
+  repeated uint64 addresses = 1;
 }
 
 message Offsets {

@@ -1,6 +1,6 @@
 [package]
 name = "tokenizers_proto"
-version = "0.1.0"
+version = "1.21.4"
 edition = "2024"
 authors = [ "Ignacio de la Torre <ignaciodlta@gmail.com>" ]
 description = "Expose huggingface/tokenizers as a dynamic library with a minimal C ABI using only primitive types (i32, raw pointers) and Protocol Buffers for structured input/output."

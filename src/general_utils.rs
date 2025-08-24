@@ -20,10 +20,16 @@ where
             Some("Sequence cannot be empty".to_string()),
         ));
     }
+    if params.addresses.iter().any(|&p| (p as *const T).is_null()) {
+        return Err((
+            CallStatus::InvalidArgumentsDetails,
+            Some("Null pointer found in sequence".to_string()),
+        ));
+    }
     let v: Vec<T> = params
         .addresses
         .into_iter()
-        .map(|p| unsafe { &*(p as usize as *const T) })
+        .map(|p | unsafe { &*(p as *const T) } )
         .cloned()
         .collect();
     Ok(v)

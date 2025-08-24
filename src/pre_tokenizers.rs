@@ -1,14 +1,13 @@
 use tokenizers::{
-    OffsetReferential, OffsetType, PreTokenizedString, PreTokenizer, PreTokenizerWrapper,
+    PreTokenizedString, PreTokenizer, PreTokenizerWrapper,
 };
 
 use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::general_utils::get_sequence;
 use crate::messages::pre_tokenizers::{
-    self, OffsetReferential as OR, OffsetType as OT, PreTokenizeResult, PreTokenizerWrapperParams,
-    pre_tokenizer_wrapper_params::Params,
+    self, PreTokenizerWrapperParams, pre_tokenizer_wrapper_params::Params,
 };
-use crate::messages::{self, CallStatus, ConversionError, Offsets};
+use crate::messages::{self, CallStatus, ConversionError};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn pre_tokenize(
@@ -25,9 +24,33 @@ pub unsafe extern "C" fn pre_tokenize(
             return CallStatus::DecodeError.into();
         }
     };
-    let mut pretokenized = PreTokenizedString::from(params.normalized);
-    let pre_tokenizer = unsafe { &*(instance_ptr as *mut dyn PreTokenizer) };
-    if let Err(e) = pre_tokenizer.pre_tokenize(&mut pretokenized) {
+    let mut pre_tokenized_string = match unsafe { (params.pipeline_string as *mut PreTokenizedString).as_mut() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+                messages::Error {
+                    details: "Invalid PreTokenizedString pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        }
+    };
+    let pre_tokenizer = match unsafe { instance_ptr.as_ref() }{
+        Some(res) => res,
+        None => {
+            set_call_result(
+            messages::Error {
+                    details: "Invalid pre-tokenizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidArgumentsDetails.into();
+        },
+    };
+    if let Err(e) = pre_tokenizer.pre_tokenize(&mut pre_tokenized_string) {
         set_call_result(
             messages::Error {
                 details: e.to_string(),
@@ -37,56 +60,7 @@ pub unsafe extern "C" fn pre_tokenize(
         );
         return CallStatus::PreTokenizationErrorDetails.into();
     };
-    let offset_ref = match OR::try_from(params.offset_referential) {
-        Ok(res) => res,
-        Err(_) => {
-            crate::set_empty_output!(out_ptr, out_len);
-            return CallStatus::UnknownEnumValue.into();
-        }
-    };
-    let offset_ref = match offset_ref {
-        OR::UnknownReferential => {
-            crate::set_empty_output!(out_ptr, out_len);
-            return CallStatus::UnknownEnumValue.into();
-        }
-        OR::Original => OffsetReferential::Original,
-        OR::Normalized => OffsetReferential::Normalized,
-    };
-    let offset_type = match OT::try_from(params.offset_type) {
-        Ok(res) => res,
-        Err(_) => {
-            crate::set_empty_output!(out_ptr, out_len);
-            return CallStatus::UnknownEnumValue.into();
-        }
-    };
-    let offset_type = match offset_type {
-        OT::UnknownType => {
-            crate::set_empty_output!(out_ptr, out_len);
-            return CallStatus::UnknownEnumValue.into();
-        }
-        OT::Byte => OffsetType::Byte,
-        OT::Char => OffsetType::Char,
-        OT::None => OffsetType::None,
-    };
-    let mut res = PreTokenizeResult {
-        tokens: pretokenized
-            .get_splits(offset_ref, offset_type)
-            .into_iter()
-            .map(|(s, _, _)| s.to_string())
-            .collect(),
-        offsets: vec![],
-    };
-    if params.include_offsets {
-        res.offsets = pretokenized
-            .get_splits(offset_ref, offset_type)
-            .into_iter()
-            .map(|(_, (s, e), _)| Offsets {
-                start: s as u64,
-                end: e as u64,
-            })
-            .collect()
-    }
-    set_call_result(res, out_ptr, out_len);
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 
@@ -124,6 +98,7 @@ pub unsafe extern "C" fn new_pre_tokenizer_wrapper(
     unsafe {
         *instance_ptr = Box::into_raw(pre_tokenizer_wrapper);
     }
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 

@@ -5,9 +5,6 @@ option csharp_namespace = "Tokenizers.HuggingFace.Internal.Normalizers";
 package messages.normalizers;
 
 message NormalizeParams{
-  string original = 1;
-}
-
-message NormalizeResult{
-  string normalized = 1;
+  // memory address to a "PipelineString" instance
+  uint64 pipeline_string = 1;
 }

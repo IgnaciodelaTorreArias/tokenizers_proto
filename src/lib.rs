@@ -3,6 +3,10 @@ mod messages;
 // free_buffer
 pub mod buffer_utils;
 pub mod general_utils;
+// get_splits
+// new_pipeline_string
+// free_pipeline_string
+pub mod pipeline_string;
 // normalize
 // new_normalizer_wrapper
 // free_normalizer_wrapper

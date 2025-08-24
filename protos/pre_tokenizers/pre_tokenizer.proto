@@ -6,29 +6,6 @@ package messages.pre_tokenizers;
 
 import "utils.proto";
 
-enum OffsetReferential {
-  UNKNOWN_REFERENTIAL = 0;
-  ORIGINAL = 1;
-  NORMALIZED = 2;
-}
-
-enum OffsetType {
-  UNKNOWN_TYPE = 0;
-  BYTE = 1;
-  CHAR = 2;
-  NONE = 3;
-}
-
 message PreTokenizeParams {
-  string normalized = 1;
-  OffsetReferential offset_referential= 2;
-  OffsetType offset_type = 3;
-
-  // Expected response fields, this helps avoiding `over fetching`
-  bool include_offsets = 4;
-}
-
-message PreTokenizeResult {
-  repeated string tokens = 1;
-  repeated messages.Offsets offsets = 2;
+  uint64 pipeline_string = 1;
 }

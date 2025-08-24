@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.PipelineString";
+
+package messages.pipeline_string;
+
+import "utils.proto";
+
+enum OffsetReferential {
+  UNKNOWN_REFERENTIAL = 0;
+  ORIGINAL = 1;
+  NORMALIZED = 2;
+}
+
+enum OffsetType {
+  UNKNOWN_TYPE = 0;
+  BYTE = 1;
+  CHAR = 2;
+  NONE = 3;
+}
+
+// Used to create a new PipelineString instance
+// A PipelineString is a PreTokenizedString internally
+message PipelineStringParams {
+  string content = 1;
+}
+
+message SplitParams {
+  OffsetReferential offset_referential= 1;
+  OffsetType offset_type = 2;
+
+  // Expected response fields, this helps avoiding `over fetching`
+  bool include_offsets = 3;
+}
+
+message SplitResult {
+  repeated string tokens = 1;
+  repeated messages.Offsets offsets = 2;
+}

@@ -60,12 +60,34 @@ pub unsafe extern "C" fn tokenizer_from_train(
     > = TokenizerBuilder::new();
     builder = builder.with_model(trained_model);
     if let Some(normalizer) = params.normalizer {
-        let n = unsafe { &*(normalizer as usize as *const NormalizerWrapper) };
-        builder = builder.with_normalizer(Some(n.clone()));
+        match unsafe { (normalizer as *const NormalizerWrapper).as_ref() } {
+            Some(n) => {builder = builder.with_normalizer(Some(n.clone()))},
+            None => {
+                set_call_result(
+                messages::Error {
+                        details: "Invalid normalizer pointer".to_string(),
+                    },
+                    out_ptr,
+                    out_len,
+                );
+                return CallStatus::InvalidArgumentsDetails.into();
+            },
+        }
     }
     if let Some(pre_tokenizer) = params.pre_tokenizer {
-        let pt = unsafe { &*(pre_tokenizer as usize as *const PreTokenizerWrapper) };
-        builder = builder.with_pre_tokenizer(Some(pt.clone()));
+        match unsafe { (pre_tokenizer as *const PreTokenizerWrapper).as_ref() } {
+            Some(pt) => {builder = builder.with_pre_tokenizer(Some(pt.clone()))},
+            None => {
+                set_call_result(
+                messages::Error {
+                        details: "Invalid pre-tokenizer pointer".to_string(),
+                    },
+                    out_ptr,
+                    out_len,
+                );
+                return CallStatus::InvalidArgumentsDetails.into();
+            },
+        }
     }
     if let Some(processor) = params.processor {
         builder = match get_processor(processor) {
@@ -138,10 +160,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
         );
         return CallStatus::TokenizerTrainingErrorDetails.into();
     }
-    let mut pretty = false;
-    if let Some(pretty_p) = params.pretty {
-        pretty = pretty_p;
-    }
+    let pretty = params.pretty.unwrap_or(false);
     if let Err(e) = tk.save(params.save_path, pretty) {
         set_call_result(
             messages::Error {
@@ -156,6 +175,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
     unsafe {
         *instance_ptr = Box::into_raw(tk_p);
     }
+    crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
 }
 
