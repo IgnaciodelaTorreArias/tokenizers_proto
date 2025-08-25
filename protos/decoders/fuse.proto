@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
-
 package messages.decoders;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
 message Fuse {}

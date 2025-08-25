@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Padding";
-
 package messages.trainers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Trainers.Padding";
 
 enum PaddingStrategy {
   UNKNOWN_PaddingStrategy = 0;

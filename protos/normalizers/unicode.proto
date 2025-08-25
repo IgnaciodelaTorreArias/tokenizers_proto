@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.Normalizers";
-
 package messages.normalizers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.Normalizers";
 
 message Nfd{}
 message Nfkd{}

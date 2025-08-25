@@ -1,8 +1,8 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.Errors";
-
 package messages;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.Errors";
 
 enum CallStatus{
   OK = 0;

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
-
 package messages.pre_tokenizers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
 
 message UnicodeScripts{}

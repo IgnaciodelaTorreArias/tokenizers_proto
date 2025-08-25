@@ -1,17 +1,10 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
-
 package messages.pre_tokenizers;
 
-enum SplitDelimiterBehavior {
-  UNKNOWN_BEHAVIOR = 0;
-  REMOVED = 1;
-  ISOLATED = 2;
-  MERGED_WITH_PREVIOUS = 3;
-  MERGED_WITH_NEXT = 4;
-  CONTIGUOUS = 5;
-}
+import "pre_tokenizers/split_delimiter_behavior.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
 
 message Whitespace{}
 
@@ -28,13 +21,13 @@ message Split {
     string string_split = 1;
     string regex_split = 4;
   }
-  SplitDelimiterBehavior behavior = 2;
+  messages.pre_tokenizers.SplitDelimiterBehavior behavior = 2;
   bool invert = 3;
 }
 
 message Punctuation {
   // Defaults: ISOLATED
-  optional SplitDelimiterBehavior behavior = 1;
+  optional messages.pre_tokenizers.SplitDelimiterBehavior behavior = 1;
 }
 
 message Digits {

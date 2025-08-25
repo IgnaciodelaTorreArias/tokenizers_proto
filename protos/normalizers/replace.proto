@@ -1,9 +1,9 @@
 syntax = "proto3";
 
+package messages.normalizers;
+
 // Because can be used as decoder
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
-
-package messages.normalizers;
 
 message Replace{
   // requiere

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal";
-
 package messages;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal";
 
 message Sequence {
   // uses the memory address of the instances

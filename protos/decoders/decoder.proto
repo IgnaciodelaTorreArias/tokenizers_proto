@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
-
 package messages.decoders;
 
 import "decoders/bpe.proto";
@@ -13,6 +11,8 @@ import "normalizers/replace.proto";
 import "decoders/fuse.proto";
 import "decoders/strip.proto";
 import "decoders/byte_fallback.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
 message Params {
   // requiere

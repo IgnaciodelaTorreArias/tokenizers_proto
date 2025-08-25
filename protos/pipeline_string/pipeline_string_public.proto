@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package messages.pipeline_string;
+
+import "utils.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.PipelineString";
+
+enum OffsetReferential {
+  UNKNOWN_REFERENTIAL = 0;
+  ORIGINAL = 1;
+  NORMALIZED = 2;
+}
+
+enum OffsetType {
+  UNKNOWN_TYPE = 0;
+  BYTE = 1;
+  CHAR = 2;
+  NONE = 3;
+}

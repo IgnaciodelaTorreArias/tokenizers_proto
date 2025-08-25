@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
-
 package messages.pre_tokenizers;
 
 import "pre_tokenizers/bert.proto";
@@ -11,6 +9,8 @@ import "pre_tokenizers/utils.proto";
 import "pre_tokenizers/unicode_scripts.proto";
 
 import "utils.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
 
 message PreTokenizerWrapperParams{
   // requiere

@@ -111,18 +111,17 @@ pub unsafe extern "C" fn encode(
             return CallStatus::TokenizerEncodingErrorDetails.into();
         }
     };
-    let encode_result = if include_overflowing {
-        let mut v = vec![encoding_to_message(
-            &original,
-            include_type_ids,
-            include_tokens,
-            include_words,
-            include_offsets,
-            include_special_tokens_mask,
-            include_attention_mask,
-        )];
-        let overflowing = original.take_overflowing();
-        v.extend(overflowing.into_iter().map(|original| {
+    let mut encode_result = vec![encoding_to_message(
+        &original,
+        include_type_ids,
+        include_tokens,
+        include_words,
+        include_offsets,
+        include_special_tokens_mask,
+        include_attention_mask,
+    )];
+    if include_overflowing {
+        encode_result.extend(original.take_overflowing().into_iter().map(|original| {
             encoding_to_message(
                 &original,
                 include_type_ids,
@@ -133,17 +132,6 @@ pub unsafe extern "C" fn encode(
                 include_attention_mask,
             )
         }));
-        v
-    } else {
-        vec![encoding_to_message(
-            &original,
-            include_type_ids,
-            include_tokens,
-            include_words,
-            include_offsets,
-            include_special_tokens_mask,
-            include_attention_mask,
-        )]
     };
     set_call_result(
         EncodeResult {

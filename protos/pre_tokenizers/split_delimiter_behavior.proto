@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package messages.pre_tokenizers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.PreTokenizers";
+
+enum SplitDelimiterBehavior {
+  UNKNOWN_BEHAVIOR = 0;
+  REMOVED = 1;
+  ISOLATED = 2;
+  MERGED_WITH_PREVIOUS = 3;
+  MERGED_WITH_NEXT = 4;
+  CONTIGUOUS = 5;
+}

@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer";
-
 package messages.tokenizer;
 
 import "utils.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer";
 
 message EncodeParams {
   string input = 1;

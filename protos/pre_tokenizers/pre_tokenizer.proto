@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
-
 package messages.pre_tokenizers;
 
 import "utils.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
 
 message PreTokenizeParams {
   uint64 pipeline_string = 1;

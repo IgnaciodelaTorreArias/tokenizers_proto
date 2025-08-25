@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
-
 package messages.trainers;
 
 import "trainers/bpe.proto";
@@ -14,6 +12,8 @@ import "decoders/decoder.proto";
 
 import "trainers/truncation_params.proto";
 import "trainers/padding_params.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
 
 message Params {
   // requiere
