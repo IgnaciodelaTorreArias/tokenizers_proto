@@ -70,7 +70,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
                     out_ptr,
                     out_len,
                 );
-                return CallStatus::InvalidArgumentsDetails.into();
+                return CallStatus::InvalidPointerDetails.into();
             },
         }
     }
@@ -85,7 +85,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
                     out_ptr,
                     out_len,
                 );
-                return CallStatus::InvalidArgumentsDetails.into();
+                return CallStatus::InvalidPointerDetails.into();
             },
         }
     }

@@ -32,7 +32,7 @@ pub unsafe extern "C" fn normalize(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         }
     };
     let normalizer = match unsafe { instance_ptr.as_ref() }{
@@ -45,7 +45,7 @@ pub unsafe extern "C" fn normalize(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         },
     };
     if let Err(e) = pre_tokenized_string.normalize(|s| normalizer.normalize(s)) {

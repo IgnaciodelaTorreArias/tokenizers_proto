@@ -34,7 +34,7 @@ pub unsafe extern "C" fn pre_tokenize(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         }
     };
     let pre_tokenizer = match unsafe { instance_ptr.as_ref() }{
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn pre_tokenize(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         },
     };
     if let Err(e) = pre_tokenizer.pre_tokenize(&mut pre_tokenized_string) {

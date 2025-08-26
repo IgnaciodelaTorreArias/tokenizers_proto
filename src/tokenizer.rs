@@ -78,7 +78,7 @@ pub unsafe extern "C" fn encode(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         },
     };
     let include_type_ids = params.include_type_ids.unwrap_or(false);
@@ -174,7 +174,7 @@ pub unsafe extern "C" fn decode(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         },
     };
     let decode_result = match tokenizer.decode(&params.ids, params.skip_special_tokens) {

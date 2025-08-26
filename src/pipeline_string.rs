@@ -31,7 +31,7 @@ pub unsafe extern "C" fn get_splits(
                 out_ptr,
                 out_len,
             );
-            return CallStatus::InvalidArgumentsDetails.into();
+            return CallStatus::InvalidPointerDetails.into();
         }
     };
     let offset_ref = match params.offset_referential().try_into() {

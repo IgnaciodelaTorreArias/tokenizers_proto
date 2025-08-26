@@ -22,7 +22,7 @@ where
     }
     if params.addresses.iter().any(|&p| (p as *const T).is_null()) {
         return Err((
-            CallStatus::InvalidArgumentsDetails,
+            CallStatus::InvalidPointerDetails,
             Some("Null pointer found in sequence".to_string()),
         ));
     }
