@@ -4,6 +4,13 @@ package messages.pre_tokenizers;
 
 option csharp_namespace = "Tokenizers.HuggingFace.PreTokenizers";
 
+// Defines the expected behavior for the delimiter of a Split Pattern
+// When splitting on `'-'` for example, with input `the-final--countdown`:
+//  - Removed => `[ "the", "final", "countdown" ]`
+//  - Isolated => `[ "the", "-", "final", "-", "-", "countdown" ]`
+//  - MergedWithPrevious => `[ "the-", "final-", "-", "countdown" ]`
+//  - MergedWithNext => `[ "the", "-final", "-", "-countdown" ]`
+//  - Contiguous => `[ "the", "-", "final", "--", "countdown" ]`
 enum SplitDelimiterBehavior {
   UNKNOWN_BEHAVIOR = 0;
   REMOVED = 1;

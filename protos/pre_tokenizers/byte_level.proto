@@ -5,6 +5,9 @@ package messages.pre_tokenizers;
 // Because can be used as decoder or postprocessor
 option csharp_namespace = "Tokenizers.HuggingFace.Commons";
 
+// Provides all the necessary steps to handle the BPE tokenization at the byte-level. Takes care
+// of all the required processing steps to transform a UTF-8 string as needed before and after the
+// BPE model does its job.
 message ByteLevel {
   // Defaults: true
   optional bool add_prefix_space = 1;

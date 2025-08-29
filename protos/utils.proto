@@ -8,23 +8,3 @@ message Sequence {
   // uses the memory address of the instances
   repeated uint64 addresses = 1;
 }
-
-message Offsets {
-  uint64 start = 1;
-  uint64 end = 2;
-}
-
-message AddedToken {
-  /// The content of the added token
-  string content = 1;
-  /// Whether this token must be a single word or can break words
-  bool single_word = 2;
-  /// Whether this token should strip whitespaces on its left
-  bool lstrip = 3;
-  /// Whether this token should strip whitespaces on its right
-  bool rstrip = 4;
-  /// Whether this token should be normalized
-  bool normalized = 5;
-  /// Whether this token is special
-  bool special = 6;
-}

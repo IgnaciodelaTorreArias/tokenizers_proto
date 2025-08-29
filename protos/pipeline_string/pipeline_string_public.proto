@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package messages.pipeline_string;
 
-import "utils.proto";
-
 option csharp_namespace = "Tokenizers.HuggingFace.PipelineString";
 
 enum OffsetReferential {

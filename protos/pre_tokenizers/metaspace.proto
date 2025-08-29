@@ -5,6 +5,10 @@ package messages.pre_tokenizers;
 // Because can be used as decoder
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
+// Enum representing options for the metaspace prepending scheme.
+// FIRST -> Specifies that the scheme should be prepended only once, on the first split
+// NEVER -> Specifies that the space should not be prepended
+// ALWAYS -> Specifies that the scheme should always be prepended.
 enum PrependScheme {
   UNKNOWN_SCHEME = 0;
   FIRST = 1;
@@ -12,6 +16,8 @@ enum PrependScheme {
   ALWAYS = 3;
 }
 
+// Replaces all the whitespaces by the provided meta character and then
+// splits on this character
 message Metaspace{
   // single character
   // Defaults: _

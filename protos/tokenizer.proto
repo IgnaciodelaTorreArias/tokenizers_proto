@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package messages.tokenizer;
 
-import "utils.proto";
+import "tokenizer_public.proto";
 
-option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer";
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.Tokenizer";
 
 message EncodeParams {
   string input = 1;
@@ -32,16 +32,6 @@ message EncodeParams {
 message EncodeResult {
   // first value is the result, the rest is the overflowing if `include_overflowing` is set to true
   repeated Encoding encodings = 1;
-}
-
-message Encoding {
-  repeated uint32 ids = 1;
-  repeated uint32 type_ids = 2;
-  repeated string tokens = 3;
-  repeated uint32 words = 4;
-  repeated messages.Offsets offsets = 5;
-  repeated uint32 special_tokens_mask = 6;
-  repeated uint32 attention_mask =7;
 }
 
 message DecodeParams {

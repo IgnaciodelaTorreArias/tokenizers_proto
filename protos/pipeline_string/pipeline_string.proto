@@ -3,7 +3,7 @@ syntax = "proto3";
 package messages.pipeline_string;
 
 import "pipeline_string/pipeline_string_public.proto";
-import "utils.proto";
+import "tokenizer_public.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.PipelineString";
 
@@ -23,5 +23,5 @@ message SplitParams {
 
 message SplitResult {
   repeated string tokens = 1;
-  repeated messages.Offsets offsets = 2;
+  repeated messages.tokenizer.Offsets offsets = 2;
 }

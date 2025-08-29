@@ -31,6 +31,8 @@ message Tokens {
   repeated Token tokens = 1;
 }
 
+// Provides a way to specify templates in order to add the special tokens to each
+// input sequence as relevant
 message TemplateProcessing {
   // Defaults: '$0'
   optional string single = 1;

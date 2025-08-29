@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package messages.decoders;
+
+import "decoders/bpe.proto";
+import "pre_tokenizers/byte_level.proto";
+import "decoders/word_piece.proto";
+import "pre_tokenizers/metaspace.proto";
+import "decoders/ctc.proto";
+import "normalizers/replace.proto";
+import "decoders/fuse.proto";
+import "decoders/strip.proto";
+import "decoders/byte_fallback.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
+
+message Params {
+  // requiere
+  oneof params {
+    BpeDecoder bpe_decoder = 1;
+    messages.pre_tokenizers.ByteLevel byte_level = 2;
+    WordPiece word_piece = 3;
+    messages.pre_tokenizers.Metaspace metaspace = 4;
+    Ctc ctc = 5;
+    messages.normalizers.Replace replace = 6;
+    Fuse fuse = 7;
+    Strip strip = 8;
+    ByteFallback byte_fallback = 9;
+  }
+}

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package messages.trainers;
 
-import "utils.proto";
+import "trainers/added_token.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
 
@@ -14,7 +14,7 @@ message BpeTrainer {
   // Defaults: true
   optional bool show_progress = 3;
   // Defaults: []
-  repeated messages.AddedToken special_tokens = 4;
+  repeated AddedToken special_tokens = 4;
   // Defaults: None
   optional uint64 limit_alphabet = 5;
   // characters should be unique, this is converted to a set of characters

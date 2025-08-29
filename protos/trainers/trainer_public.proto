@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+import "trainers/bpe.proto";
+import "trainers/unigram.proto";
+import "trainers/word_level.proto";
+import "trainers/word_piece.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
+
+message Params {
+  // requiere
+  oneof params {
+    BpeTrainer bpe_trainer = 1;
+    UnigramTrainer unigram_trainer = 2;
+    WordLevelTrainer word_level_trainer = 3;
+    WordPieceTrainer word_piece_trainer = 4;
+  }
+}

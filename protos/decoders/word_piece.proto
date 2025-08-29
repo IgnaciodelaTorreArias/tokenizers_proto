@@ -4,6 +4,8 @@ package messages.decoders;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
+// The WordPiece decoder takes care of decoding a list of wordpiece tokens
+// back into a readable string.
 message WordPiece {
   // Defaults: '##'
   optional string prefix = 1;

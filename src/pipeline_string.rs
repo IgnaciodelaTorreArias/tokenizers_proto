@@ -4,7 +4,7 @@ use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::messages::pipeline_string::{
     PipelineStringParams, SplitParams, SplitResult
 };
-use crate::messages::{self, CallStatus, Offsets};
+use crate::messages::{self, CallStatus, tokenizer::Offsets};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn get_splits(

@@ -4,4 +4,8 @@ package messages.decoders;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
+// Fuse simply fuses all tokens into one big string.
+// It's usually the last decoding step anyway, but this
+// decoder exists incase some decoders need to happen after that
+// step
 message Fuse {}

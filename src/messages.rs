@@ -561,7 +561,7 @@ pub(crate) mod trainers {
 
     include!(concat!(env!("OUT_DIR"), "/messages.trainers.rs"));
 
-    fn get_added_tokens(special_tokens: Vec<super::AddedToken>) -> Vec<tokenizers::AddedToken> {
+    fn get_added_tokens(special_tokens: Vec<AddedToken>) -> Vec<tokenizers::AddedToken> {
         special_tokens
             .into_iter()
             .map(|at| tokenizers::AddedToken {
@@ -758,8 +758,6 @@ pub(crate) mod trainers {
     }
 }
 pub(crate) mod tokenizer {
-    use super::Offsets;
-
     include!(concat!(env!("OUT_DIR"), "/messages.tokenizer.rs"));
     pub fn encoding_to_message(
         original: &tokenizers::tokenizer::Encoding,

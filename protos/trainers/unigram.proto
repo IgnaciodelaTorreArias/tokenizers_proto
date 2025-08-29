@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package messages.trainers;
 
-import "utils.proto";
+import "trainers/added_token.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
 
@@ -16,7 +16,7 @@ message UnigramTrainer {
   // Defaults: 0.75
   optional double shrinking_factor = 4;
   // Defaults: []
-  repeated messages.AddedToken special_tokens = 5;
+  repeated AddedToken special_tokens = 5;
   // characters should be unique, this is converted to a set of characters
   // Defaults: []
   optional string initial_alphabet = 6;

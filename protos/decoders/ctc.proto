@@ -4,6 +4,10 @@ package messages.decoders;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
+// The CTC (Connectionist Temporal Classification) decoder takes care
+// of sanitizing a list of inputs token.
+// Due to some alignment problem the output of some models can come
+// with duplicated token.
 message Ctc {
   // Defaults: '<pad>'
   optional string pad_token = 1;

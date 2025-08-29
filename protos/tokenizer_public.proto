@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package messages.tokenizer;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer";
+
+message Offsets {
+  uint64 start = 1;
+  uint64 end = 2;
+}
+
+// Represents the output of a `Tokenizer`
+message Encoding {
+  // IDs produced by the `Tokenizer`
+  repeated uint32 ids = 1;
+  // Type of the IDs
+  repeated uint32 type_ids = 2;
+  // Tokens associated to each ID
+  repeated string tokens = 3;
+  // Indice of the word associated to each token/ID
+  repeated uint32 words = 4;
+  // Offsets of the token/ID
+  repeated Offsets offsets = 5;
+  // Mask identifying special tokens
+  repeated uint32 special_tokens_mask = 6;
+  // Mask identifying padding tokens for the attention mechanism
+  repeated uint32 attention_mask =7;
+}
