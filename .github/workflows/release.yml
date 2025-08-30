@@ -159,8 +159,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: binaries
-      - run: sudo apt install -y zip
-      - run: for dir in binaries/*/; do dir=${dir%/};zip -rj "${dir}.zip" "$dir"; done
+      - run: for dir in binaries/*/; do runtime=${dir%/}; ls $dir | tar -czf "${runtime}.tar.gz" -C $dir -T -; done
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -168,6 +167,6 @@ jobs:
           tag_name: v${{ inputs.version }}
           draft: false
           files: |
-            binaries/*.zip
+            binaries/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
