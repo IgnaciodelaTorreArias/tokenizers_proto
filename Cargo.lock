@@ -892,6 +892,7 @@ dependencies = [
 name = "tokenizers_proto"
 version = "1.21.4"
 dependencies = [
+ "ahash",
  "prost",
  "prost-build",
  "tauri-winres",

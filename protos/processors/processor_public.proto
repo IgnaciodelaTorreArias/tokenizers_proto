@@ -9,7 +9,7 @@ import "processors/template.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Processors";
 
-message Params {
+message PostProcessorWrapper {
   // requiere
   oneof params {
     RobertaProcessing roberta_processing = 1;

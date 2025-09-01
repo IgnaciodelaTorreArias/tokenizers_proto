@@ -14,7 +14,7 @@ import "decoders/byte_fallback.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 
-message Params {
+message DecoderWrapper {
   // requiere
   oneof params {
     BpeDecoder bpe_decoder = 1;

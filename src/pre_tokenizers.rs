@@ -1,13 +1,7 @@
-use tokenizers::{
-    PreTokenizedString, PreTokenizer, PreTokenizerWrapper,
-};
+use tokenizers::{PreTokenizedString, PreTokenizer, PreTokenizerWrapper};
 
 use crate::buffer_utils::{get_call_message, set_call_result};
-use crate::general_utils::get_sequence;
-use crate::messages::pre_tokenizers::{
-    self, PreTokenizerWrapperParams, pre_tokenizer_wrapper_params::Params,
-};
-use crate::messages::{self, CallStatus, ConversionError};
+use crate::messages::{self, CallStatus, pre_tokenizers::PreTokenizeParams};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn pre_tokenize(
@@ -17,38 +11,39 @@ pub unsafe extern "C" fn pre_tokenize(
     out_ptr: *mut *mut u8,
     out_len: *mut usize,
 ) -> i32 {
-    let params = match get_call_message::<pre_tokenizers::PreTokenizeParams>(ptr, len) {
+    let params = match get_call_message::<PreTokenizeParams>(ptr, len) {
         Ok(msg) => msg,
         Err(_) => {
             crate::set_empty_output!(out_ptr, out_len);
             return CallStatus::DecodeError.into();
         }
     };
-    let mut pre_tokenized_string = match unsafe { (params.pipeline_string as *mut PreTokenizedString).as_mut() }{
+    let mut pre_tokenized_string =
+        match unsafe { (params.pipeline_string as *mut PreTokenizedString).as_mut() } {
+            Some(res) => res,
+            None => {
+                set_call_result(
+                    messages::Error {
+                        details: "Invalid PreTokenizedString pointer".to_string(),
+                    },
+                    out_ptr,
+                    out_len,
+                );
+                return CallStatus::InvalidPointerDetails.into();
+            }
+        };
+    let pre_tokenizer = match unsafe { instance_ptr.as_ref() } {
         Some(res) => res,
         None => {
             set_call_result(
                 messages::Error {
-                    details: "Invalid PreTokenizedString pointer".to_string(),
-                },
-                out_ptr,
-                out_len,
-            );
-            return CallStatus::InvalidPointerDetails.into();
-        }
-    };
-    let pre_tokenizer = match unsafe { instance_ptr.as_ref() }{
-        Some(res) => res,
-        None => {
-            set_call_result(
-            messages::Error {
                     details: "Invalid pre-tokenizer pointer".to_string(),
                 },
                 out_ptr,
                 out_len,
             );
             return CallStatus::InvalidPointerDetails.into();
-        },
+        }
     };
     if let Err(e) = pre_tokenizer.pre_tokenize(&mut pre_tokenized_string) {
         set_call_result(
@@ -72,19 +67,14 @@ pub unsafe extern "C" fn new_pre_tokenizer_wrapper(
     out_ptr: *mut *mut u8,
     out_len: *mut usize,
 ) -> i32 {
-    let params = match get_call_message::<PreTokenizerWrapperParams>(ptr, len) {
+    let params = match get_call_message::<messages::pre_tokenizers::PreTokenizerWrapper>(ptr, len) {
         Ok(msg) => msg,
         Err(_) => {
             crate::set_empty_output!(out_ptr, out_len);
             return CallStatus::DecodeError.into();
         }
     };
-    if params.params.is_none() {
-        crate::set_empty_output!(out_ptr, out_len);
-        return CallStatus::EmptyParams.into();
-    }
-    let pre_tokenizer_wrapper: PreTokenizerWrapper = match get_pre_tokenizer(params.params.unwrap())
-    {
+    let pre_tokenizer_wrapper: PreTokenizerWrapper = match params.try_into() {
         Ok(res) => res,
         Err(e) => {
             match e.1 {
@@ -100,25 +90,6 @@ pub unsafe extern "C" fn new_pre_tokenizer_wrapper(
     }
     crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
-}
-
-fn get_pre_tokenizer(pre_tokenizer: Params) -> Result<PreTokenizerWrapper, ConversionError> {
-    Ok(match pre_tokenizer {
-        Params::BertPreTokenizer(params) => params.into(),
-        Params::ByteLevel(params) => params.into(),
-        Params::Metaspace(params) => params.try_into()?,
-        Params::Whitespace(params) => params.into(),
-        Params::WhitespaceSplit(params) => params.into(),
-        Params::Delimiter(params) => params.try_into()?,
-        Params::Sequence(params) => {
-            tokenizers::pre_tokenizers::sequence::Sequence::new(get_sequence(params)?).into()
-        }
-        Params::Split(params) => params.try_into()?,
-        Params::Punctuation(params) => params.try_into()?,
-        Params::Digits(params) => params.into(),
-        Params::UnicodeScripts(params) => params.into(),
-        Params::FixedLength(params) => params.into(),
-    })
 }
 
 #[unsafe(no_mangle)]

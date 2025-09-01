@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package messages.models.bpe;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Models.Bpe";
+
+message Merge{
+  string first = 1;
+  string second = 2;
+}
+
+message BpeModel {
+  // If set, then merges_file must also be set
+  optional string vocab_file = 1;
+  // If set, then vocab_file must also be set
+  optional string merges_file = 2;
+  map<string, uint32> vocab = 3;
+  repeated Merge merges = 4;
+  // Defaults: 10_000
+  optional uint64 cache_capacity = 5;
+  // Defaults: None
+  optional float dropout = 6;
+  // Defaults: None
+  optional string unk_token = 7;
+  // Defaults: None
+  optional string continuing_subword_prefix = 8;
+  // Defaults: None
+  optional string end_of_word_suffix = 9;
+  // Defaults: false
+  optional bool fuse_unk = 10;
+  // Defaults: false
+  optional bool byte_fallback = 11;
+  // Defaults: false
+  optional bool ignore_merges = 12;
+}

@@ -7,5 +7,5 @@ import "processors/processor_public.proto";
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Processors";
 
 message ProcessorWrapperParams {
-  repeated Params params = 1;
+  repeated PostProcessorWrapper params = 1;
 }

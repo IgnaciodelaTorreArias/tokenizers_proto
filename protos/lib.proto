@@ -2,9 +2,8 @@ syntax = "proto3";
 
 import "error.proto";
 import "pipeline_string/pipeline_string.proto";
+import "pipeline_string/normalize.proto";
+import "pipeline_string/pre_tokenize.proto";
 import "normalizers/normalizer.proto";
-import "normalizers/normalizer_instance.proto";
 import "pre_tokenizers/pre_tokenizer.proto";
-import "pre_tokenizers/pre_tokenizer_instance.proto";
-import "trainers/trainer.proto";
-import "tokenizer.proto";
+import "tokenizer/tokenizer.proto";

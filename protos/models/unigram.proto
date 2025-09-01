@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package messages.models.unigram;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Models.Unigram";
+
+message VocabItem {
+  string token = 1;
+  double score = 2;
+}
+
+message UnigramModel {
+  repeated VocabItem vocab = 1;
+  optional uint64 unk_id = 2;
+  optional bool byte_fallback = 3;
+  optional double min_score = 4;
+}

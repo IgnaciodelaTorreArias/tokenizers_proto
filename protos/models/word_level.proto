@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package messages.models.word_level;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Models.WordLevel";
+
+message WordLevelModel {
+  optional string files = 1;
+  map<string, uint32> vocab = 2;
+  // Defaults: "<unk>"
+  optional string unk_token = 3;
+}

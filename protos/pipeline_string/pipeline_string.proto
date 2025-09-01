@@ -3,7 +3,7 @@ syntax = "proto3";
 package messages.pipeline_string;
 
 import "pipeline_string/pipeline_string_public.proto";
-import "tokenizer_public.proto";
+import "tokenizer/encoding.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.PipelineString";
 

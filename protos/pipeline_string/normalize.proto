@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package messages.normalizers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Internal.Normalizers";
+
+message NormalizeParams{
+  // memory address to a "PipelineString" instance
+  uint64 pipeline_string = 1;
+}

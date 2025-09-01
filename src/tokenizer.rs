@@ -1,6 +1,6 @@
 use tokenizers::tokenizer::{
-    DecoderWrapper, ModelWrapper, NormalizerWrapper, PostProcessorWrapper, PreTokenizerWrapper,
-    Tokenizer, TokenizerImpl, EncodeInput
+    DecoderWrapper, EncodeInput, ModelWrapper, NormalizerWrapper, PostProcessorWrapper,
+    PreTokenizerWrapper, Tokenizer, TokenizerImpl,
 };
 
 use crate::buffer_utils::{get_call_message, set_call_result};
@@ -68,18 +68,18 @@ pub unsafe extern "C" fn encode(
             return CallStatus::DecodeError.into();
         }
     };
-    let tokenizer = match unsafe { instance_ptr.as_ref() }{
+    let tokenizer = match unsafe { instance_ptr.as_ref() } {
         Some(res) => res,
         None => {
             set_call_result(
-            messages::Error {
+                messages::Error {
                     details: "Invalid tokenizer pointer".to_string(),
                 },
                 out_ptr,
                 out_len,
             );
             return CallStatus::InvalidPointerDetails.into();
-        },
+        }
     };
     let include_type_ids = params.include_type_ids.unwrap_or(false);
     let include_tokens = params.include_tokens.unwrap_or(false);
@@ -164,18 +164,18 @@ pub unsafe extern "C" fn decode(
             return CallStatus::DecodeError.into();
         }
     };
-    let tokenizer = match unsafe { instance_ptr.as_ref() }{
+    let tokenizer = match unsafe { instance_ptr.as_ref() } {
         Some(res) => res,
         None => {
             set_call_result(
-            messages::Error {
+                messages::Error {
                     details: "Invalid tokenizer pointer".to_string(),
                 },
                 out_ptr,
                 out_len,
             );
             return CallStatus::InvalidPointerDetails.into();
-        },
+        }
     };
     let decode_result = match tokenizer.decode(&params.ids, params.skip_special_tokens) {
         Ok(res) => res,

@@ -2,9 +2,7 @@ include!(concat!(env!("OUT_DIR"), "/messages.rs"));
 // Error while Converting the defined instance to a concrete instance
 pub(crate) type ConversionError = (CallStatus, Option<String>);
 pub(crate) mod pipeline_string {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.pipeline_string.rs"));
 
     impl Into<tokenizers::pre_tokenizer::PreTokenizedString> for PipelineStringParams {
@@ -12,9 +10,10 @@ pub(crate) mod pipeline_string {
             self.content.into()
         }
     }
+
     impl TryInto<tokenizers::normalizer::OffsetReferential> for OffsetReferential {
         type Error = ConversionError;
-        
+
         fn try_into(self) -> Result<tokenizers::normalizer::OffsetReferential, Self::Error> {
             use tokenizers::normalizer::OffsetReferential;
             Ok(match self {
@@ -24,9 +23,10 @@ pub(crate) mod pipeline_string {
             })
         }
     }
-    impl TryInto<tokenizers::pre_tokenizer::OffsetType> for OffsetType{
+
+    impl TryInto<tokenizers::pre_tokenizer::OffsetType> for OffsetType {
         type Error = ConversionError;
-        
+
         fn try_into(self) -> Result<tokenizers::pre_tokenizer::OffsetType, Self::Error> {
             use tokenizers::pre_tokenizer::OffsetType;
             Ok(match self {
@@ -39,9 +39,7 @@ pub(crate) mod pipeline_string {
     }
 }
 pub(crate) mod normalizers {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.normalizers.rs"));
 
     impl Into<tokenizers::normalizers::NormalizerWrapper> for BertNormalizer {
@@ -55,51 +53,61 @@ pub(crate) mod normalizers {
             d.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Nfd {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::unicode::NFD.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Nfkd {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::unicode::NFKD.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Nfc {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::unicode::NFC.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Nfkc {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::unicode::NFKC.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Nmt {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::unicode::Nmt.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for StripNormalizer {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::strip::Strip::new(self.strip_left, self.strip_right).into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for StripAccents {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::strip::StripAccents.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Lowercase {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::utils::Lowercase.into()
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for Prepend {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::prepend::Prepend::new(self.prepend).into()
         }
     }
+
     impl TryInto<tokenizers::normalizers::replace::Replace> for Replace {
         type Error = ConversionError;
 
@@ -120,6 +128,7 @@ pub(crate) mod normalizers {
             })
         }
     }
+
     impl TryInto<tokenizers::normalizers::NormalizerWrapper> for Replace {
         type Error = ConversionError;
 
@@ -129,6 +138,7 @@ pub(crate) mod normalizers {
             Ok(v.into())
         }
     }
+
     impl TryInto<tokenizers::decoders::DecoderWrapper> for Replace {
         type Error = ConversionError;
 
@@ -138,6 +148,7 @@ pub(crate) mod normalizers {
             Ok(v.into())
         }
     }
+
     impl TryInto<tokenizers::normalizers::NormalizerWrapper> for Precompiled {
         type Error = ConversionError;
 
@@ -155,16 +166,47 @@ pub(crate) mod normalizers {
             )
         }
     }
+
     impl Into<tokenizers::normalizers::NormalizerWrapper> for ByteLevel {
         fn into(self) -> tokenizers::normalizers::NormalizerWrapper {
             tokenizers::normalizers::byte_level::ByteLevel.into()
         }
     }
+
+    impl TryInto<tokenizers::normalizers::NormalizerWrapper> for NormalizerWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::normalizers::NormalizerWrapper, Self::Error> {
+            use crate::general_utils::get_sequence;
+            if self.params.is_none() {
+                return Err((CallStatus::EmptyParams, None));
+            }
+            Ok(match self.params.unwrap() {
+                normalizer_wrapper::Params::BertNormalizer(bert_normalizer) => {
+                    bert_normalizer.into()
+                }
+                normalizer_wrapper::Params::Nfd(nfd) => nfd.into(),
+                normalizer_wrapper::Params::Nfkd(nfkd) => nfkd.into(),
+                normalizer_wrapper::Params::Nfc(nfc) => nfc.into(),
+                normalizer_wrapper::Params::Nfkc(nfkc) => nfkc.into(),
+                normalizer_wrapper::Params::Nmt(nmt) => nmt.into(),
+                normalizer_wrapper::Params::StripNormalizer(strip_normalizer) => {
+                    strip_normalizer.into()
+                }
+                normalizer_wrapper::Params::StripAccents(strip_accents) => strip_accents.into(),
+                normalizer_wrapper::Params::Sequence(sequence) => {
+                    tokenizers::normalizers::Sequence::new(get_sequence(sequence)?).into()
+                }
+                normalizer_wrapper::Params::Lowercase(lowercase) => lowercase.into(),
+                normalizer_wrapper::Params::Prepend(prepend) => prepend.into(),
+                normalizer_wrapper::Params::Replace(replace) => replace.try_into()?,
+                normalizer_wrapper::Params::Precompiled(precompiled) => precompiled.try_into()?,
+                normalizer_wrapper::Params::ByteLevel(byte_level) => byte_level.into(),
+            })
+        }
+    }
 }
 pub(crate) mod pre_tokenizers {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.pre_tokenizers.rs"));
 
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for BertPreTokenizer {
@@ -172,6 +214,7 @@ pub(crate) mod pre_tokenizers {
             tokenizers::pre_tokenizers::bert::BertPreTokenizer.into()
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::byte_level::ByteLevel> for ByteLevel {
         fn into(self) -> tokenizers::pre_tokenizers::byte_level::ByteLevel {
             use tokenizers::pre_tokenizers::byte_level::ByteLevel;
@@ -182,6 +225,7 @@ pub(crate) mod pre_tokenizers {
             d
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for ByteLevel {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             use tokenizers::pre_tokenizers::byte_level::ByteLevel;
@@ -189,6 +233,7 @@ pub(crate) mod pre_tokenizers {
             v.into()
         }
     }
+
     impl Into<tokenizers::processors::PostProcessorWrapper> for ByteLevel {
         fn into(self) -> tokenizers::processors::PostProcessorWrapper {
             use tokenizers::pre_tokenizers::byte_level::ByteLevel;
@@ -196,6 +241,7 @@ pub(crate) mod pre_tokenizers {
             v.into()
         }
     }
+
     impl Into<tokenizers::decoders::DecoderWrapper> for ByteLevel {
         fn into(self) -> tokenizers::decoders::DecoderWrapper {
             use tokenizers::pre_tokenizers::byte_level::ByteLevel;
@@ -203,6 +249,7 @@ pub(crate) mod pre_tokenizers {
             v.into()
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::metaspace::PrependScheme> for PrependScheme {
         type Error = ConversionError;
 
@@ -218,6 +265,7 @@ pub(crate) mod pre_tokenizers {
             })
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::metaspace::Metaspace> for Metaspace {
         type Error = ConversionError;
 
@@ -243,6 +291,7 @@ pub(crate) mod pre_tokenizers {
             Ok(d)
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Metaspace {
         type Error = ConversionError;
 
@@ -252,6 +301,7 @@ pub(crate) mod pre_tokenizers {
             Ok(v.into())
         }
     }
+
     impl TryInto<tokenizers::decoders::DecoderWrapper> for Metaspace {
         type Error = ConversionError;
 
@@ -261,16 +311,19 @@ pub(crate) mod pre_tokenizers {
             Ok(v.into())
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Whitespace {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             tokenizers::pre_tokenizers::whitespace::Whitespace.into()
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for WhitespaceSplit {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             tokenizers::pre_tokenizers::whitespace::WhitespaceSplit.into()
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Delimiter {
         type Error = ConversionError;
 
@@ -288,6 +341,7 @@ pub(crate) mod pre_tokenizers {
             Ok(CharDelimiterSplit::new(delimiter).into())
         }
     }
+
     impl TryInto<tokenizers::tokenizer::normalizer::SplitDelimiterBehavior> for SplitDelimiterBehavior {
         type Error = ConversionError;
 
@@ -306,6 +360,7 @@ pub(crate) mod pre_tokenizers {
             })
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Split {
         type Error = ConversionError;
 
@@ -319,19 +374,23 @@ pub(crate) mod pre_tokenizers {
                     split::Pattern::StringSplit(s) => SplitPattern::String(s),
                     split::Pattern::RegexSplit(s) => SplitPattern::Regex(s),
                 },
-                None => return Err((CallStatus::InvalidArgumentsDetails, Some("Pattern cannot be empty".to_string()))),
-            };
-            Ok(
-                match Split::new(pattern, behavior, self.invert) {
-                    Ok(res) => res,
-                    Err(e) => {
-                        return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
-                    }
+                None => {
+                    return Err((
+                        CallStatus::InvalidArgumentsDetails,
+                        Some("Pattern cannot be empty".to_string()),
+                    ));
                 }
-                .into(),
-            )
+            };
+            Ok(match Split::new(pattern, behavior, self.invert) {
+                Ok(res) => res,
+                Err(e) => {
+                    return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
+                }
+            }
+            .into())
         }
     }
+
     impl TryInto<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Punctuation {
         type Error = ConversionError;
 
@@ -344,6 +403,7 @@ pub(crate) mod pre_tokenizers {
             Ok(d.into())
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for Digits {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             use tokenizers::pre_tokenizers::digits::Digits;
@@ -352,11 +412,13 @@ pub(crate) mod pre_tokenizers {
             d.into()
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for UnicodeScripts {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             tokenizers::pre_tokenizers::unicode_scripts::UnicodeScripts.into()
         }
     }
+
     impl Into<tokenizers::pre_tokenizers::PreTokenizerWrapper> for FixedLength {
         fn into(self) -> tokenizers::pre_tokenizers::PreTokenizerWrapper {
             if let Some(length) = self.length {
@@ -367,11 +429,44 @@ pub(crate) mod pre_tokenizers {
             .into()
         }
     }
+
+    impl TryInto<tokenizers::pre_tokenizers::PreTokenizerWrapper> for PreTokenizerWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::pre_tokenizers::PreTokenizerWrapper, Self::Error> {
+            use crate::general_utils::get_sequence;
+            if self.params.is_none() {
+                return Err((CallStatus::EmptyParams, None));
+            }
+            Ok(match self.params.unwrap() {
+                pre_tokenizer_wrapper::Params::BertPreTokenizer(bert_pre_tokenizer) => {
+                    bert_pre_tokenizer.into()
+                }
+                pre_tokenizer_wrapper::Params::ByteLevel(byte_level) => byte_level.into(),
+                pre_tokenizer_wrapper::Params::Metaspace(metaspace) => metaspace.try_into()?,
+                pre_tokenizer_wrapper::Params::Whitespace(whitespace) => whitespace.into(),
+                pre_tokenizer_wrapper::Params::WhitespaceSplit(whitespace_split) => {
+                    whitespace_split.into()
+                }
+                pre_tokenizer_wrapper::Params::Delimiter(delimiter) => delimiter.try_into()?,
+                pre_tokenizer_wrapper::Params::Sequence(sequence) => {
+                    tokenizers::pre_tokenizers::sequence::Sequence::new(get_sequence(sequence)?)
+                        .into()
+                }
+                pre_tokenizer_wrapper::Params::Split(split) => split.try_into()?,
+                pre_tokenizer_wrapper::Params::Punctuation(punctuation) => {
+                    punctuation.try_into()?
+                }
+                pre_tokenizer_wrapper::Params::Digits(digits) => digits.into(),
+                pre_tokenizer_wrapper::Params::UnicodeScripts(unicode_scripts) => {
+                    unicode_scripts.into()
+                }
+                pre_tokenizer_wrapper::Params::FixedLength(fixed_length) => fixed_length.into(),
+            })
+        }
+    }
 }
 pub(crate) mod processors {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.processors.rs"));
 
     impl Into<tokenizers::processors::PostProcessorWrapper> for RobertaProcessing {
@@ -391,6 +486,7 @@ pub(crate) mod processors {
             d.into()
         }
     }
+
     impl Into<tokenizers::processors::PostProcessorWrapper> for BertProcessing {
         fn into(self) -> tokenizers::processors::PostProcessorWrapper {
             use tokenizers::processors::bert::BertProcessing;
@@ -406,6 +502,7 @@ pub(crate) mod processors {
             d.into()
         }
     }
+
     impl TryInto<tokenizers::processors::template::SpecialToken> for SpecialToken {
         type Error = ConversionError;
 
@@ -417,11 +514,13 @@ pub(crate) mod processors {
             })
         }
     }
+
     impl Into<tokenizers::processors::template::SpecialToken> for TokenPair {
         fn into(self) -> tokenizers::processors::template::SpecialToken {
             (self.token, self.token_id).into()
         }
     }
+
     impl TryInto<tokenizers::processors::template::SpecialToken> for Token {
         type Error = ConversionError;
 
@@ -432,6 +531,7 @@ pub(crate) mod processors {
             })
         }
     }
+
     impl TryInto<tokenizers::processors::template::Tokens> for TokensMap {
         type Error = ConversionError;
 
@@ -447,6 +547,7 @@ pub(crate) mod processors {
             Ok(Tokens(map))
         }
     }
+
     impl TryInto<tokenizers::processors::template::Tokens> for Tokens {
         type Error = ConversionError;
 
@@ -460,6 +561,7 @@ pub(crate) mod processors {
             Ok(vec.into())
         }
     }
+
     impl TryInto<tokenizers::processors::PostProcessorWrapper> for TemplateProcessing {
         type Error = ConversionError;
         fn try_into(self) -> Result<tokenizers::processors::PostProcessorWrapper, Self::Error> {
@@ -489,11 +591,57 @@ pub(crate) mod processors {
             .into())
         }
     }
+
+    impl TryInto<tokenizers::processors::PostProcessorWrapper> for PostProcessorWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::processors::PostProcessorWrapper, Self::Error> {
+            if self.params.is_none() {
+                return Err((
+                    CallStatus::InvalidArgumentsDetails,
+                    Some("Malformed PostProcessorWrapper, you must set a processor".to_string()),
+                ));
+            }
+            Ok(match self.params.unwrap() {
+                post_processor_wrapper::Params::RobertaProcessing(roberta_processing) => {
+                    roberta_processing.into()
+                }
+                post_processor_wrapper::Params::BertProcessing(bert_processing) => {
+                    bert_processing.into()
+                }
+                post_processor_wrapper::Params::ByteLevel(byte_level) => byte_level.into(),
+                post_processor_wrapper::Params::TemplateProcessing(template_processing) => {
+                    template_processing.try_into()?
+                }
+            })
+        }
+    }
+
+    pub(crate) fn get_processor(
+        processor: ProcessorWrapperParams,
+    ) -> Result<Option<tokenizers::processors::PostProcessorWrapper>, ConversionError> {
+        if processor.params.len() == 0 {
+            return Ok(None);
+        }
+        let r: Result<Vec<tokenizers::processors::PostProcessorWrapper>, ConversionError> =
+            processor
+                .params
+                .into_iter()
+                .map(|params| params.try_into())
+                .collect();
+        Ok(match r {
+            Ok(mut v) => {
+                if v.len() <= 1 {
+                    v.pop()
+                } else {
+                    Some(tokenizers::processors::sequence::Sequence::new(v).into())
+                }
+            }
+            Err(e) => return Err(e),
+        })
+    }
 }
 pub(crate) mod decoders {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.decoders.rs"));
 
     impl Into<tokenizers::decoders::DecoderWrapper> for BpeDecoder {
@@ -507,6 +655,7 @@ pub(crate) mod decoders {
             .into()
         }
     }
+
     impl Into<tokenizers::decoders::DecoderWrapper> for WordPiece {
         fn into(self) -> tokenizers::decoders::DecoderWrapper {
             use tokenizers::decoders::wordpiece::WordPiece;
@@ -516,6 +665,7 @@ pub(crate) mod decoders {
             d.into()
         }
     }
+
     impl Into<tokenizers::decoders::DecoderWrapper> for Ctc {
         fn into(self) -> tokenizers::decoders::DecoderWrapper {
             use tokenizers::decoders::ctc::CTC;
@@ -526,11 +676,13 @@ pub(crate) mod decoders {
             d.into()
         }
     }
+
     impl Into<tokenizers::decoders::DecoderWrapper> for Fuse {
         fn into(self) -> tokenizers::decoders::DecoderWrapper {
             tokenizers::decoders::fuse::Fuse::new().into()
         }
     }
+
     impl TryInto<tokenizers::decoders::DecoderWrapper> for Strip {
         type Error = ConversionError;
 
@@ -549,16 +701,243 @@ pub(crate) mod decoders {
             Ok(tokenizers::decoders::strip::Strip::new(content, start, stop).into())
         }
     }
+
     impl Into<tokenizers::decoders::DecoderWrapper> for ByteFallback {
         fn into(self) -> tokenizers::decoders::DecoderWrapper {
             tokenizers::decoders::byte_fallback::ByteFallback::new().into()
         }
     }
+
+    impl TryInto<tokenizers::decoders::DecoderWrapper> for DecoderWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::decoders::DecoderWrapper, Self::Error> {
+            if self.params.is_none() {
+                return Err((
+                    CallStatus::InvalidArgumentsDetails,
+                    Some("Malformed DecoderWrapper, you must set a decoder".to_string()),
+                ));
+            }
+            Ok(match self.params.unwrap() {
+                decoder_wrapper::Params::BpeDecoder(bpe_decoder) => bpe_decoder.into(),
+                decoder_wrapper::Params::ByteLevel(byte_level) => byte_level.into(),
+                decoder_wrapper::Params::WordPiece(word_piece) => word_piece.into(),
+                decoder_wrapper::Params::Metaspace(metaspace) => metaspace.try_into()?,
+                decoder_wrapper::Params::Ctc(ctc) => ctc.into(),
+                decoder_wrapper::Params::Replace(replace) => replace.try_into()?,
+                decoder_wrapper::Params::Fuse(fuse) => fuse.into(),
+                decoder_wrapper::Params::Strip(strip) => strip.try_into()?,
+                decoder_wrapper::Params::ByteFallback(byte_fallback) => byte_fallback.into(),
+            })
+        }
+    }
+
+    pub(crate) fn get_decoder(
+        decoder: DecoderWrapperParams,
+    ) -> Result<Option<tokenizers::decoders::DecoderWrapper>, ConversionError> {
+        if decoder.params.len() == 0 {
+            return Ok(None);
+        }
+        let r: Result<Vec<tokenizers::decoders::DecoderWrapper>, ConversionError> = decoder
+            .params
+            .into_iter()
+            .map(|params| params.try_into())
+            .collect();
+        Ok(match r {
+            Ok(mut v) => {
+                if v.len() <= 1 {
+                    v.pop()
+                } else {
+                    Some(tokenizers::decoders::sequence::Sequence::new(v).into())
+                }
+            }
+            Err(e) => return Err(e),
+        })
+    }
+}
+pub(crate) mod models {
+    use super::{CallStatus, ConversionError};
+    include!(concat!(env!("OUT_DIR"), "/messages.models.rs"));
+
+    pub(crate) mod bpe {
+        use super::CallStatus;
+        use super::ConversionError;
+        include!(concat!(env!("OUT_DIR"), "/messages.models.bpe.rs"));
+        impl TryInto<tokenizers::models::ModelWrapper> for BpeModel {
+            type Error = ConversionError;
+            fn try_into(self) -> Result<tokenizers::models::ModelWrapper, Self::Error> {
+                let mut d = tokenizers::models::bpe::BpeBuilder::default();
+                if self.vocab_file.is_some() ^ self.merges_file.is_some() {
+                    return Err((
+                        CallStatus::InvalidArgumentsDetails,
+                        Some("Both vocab_file and merges_file must be set".to_string()),
+                    ));
+                }
+                if self.vocab_file.is_some() {
+                    d = d.files(self.vocab_file.unwrap(), self.merges_file.unwrap());
+                }
+                if !self.vocab.is_empty() || !self.merges.is_empty() {
+                    d = d.vocab_and_merges(
+                        self.vocab
+                            .into_iter()
+                            .collect::<ahash::AHashMap<String, u32>>(),
+                        self.merges
+                            .into_iter()
+                            .map(|merge| (merge.first, merge.second))
+                            .collect(),
+                    );
+                }
+                if let Some(cache_capacity) = self.cache_capacity {
+                    d = d.cache_capacity(cache_capacity as usize);
+                }
+                if let Some(dropout) = self.dropout {
+                    d = d.dropout(dropout);
+                }
+                if let Some(unk_token) = self.unk_token {
+                    d = d.unk_token(unk_token);
+                }
+                if let Some(continuing_subword_prefix) = self.continuing_subword_prefix {
+                    d = d.continuing_subword_prefix(continuing_subword_prefix);
+                }
+                if let Some(end_of_word_suffix) = self.end_of_word_suffix {
+                    d = d.end_of_word_suffix(end_of_word_suffix);
+                }
+                if let Some(fuse_unk) = self.fuse_unk {
+                    d = d.fuse_unk(fuse_unk);
+                }
+                if let Some(byte_fallback) = self.byte_fallback {
+                    d = d.byte_fallback(byte_fallback);
+                }
+                if let Some(ignore_merges) = self.ignore_merges {
+                    d = d.ignore_merges(ignore_merges);
+                }
+                Ok(match d.build() {
+                    Ok(res) => res.into(),
+                    Err(e) => {
+                        return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
+                    }
+                })
+            }
+        }
+    }
+
+    pub(crate) mod unigram {
+        use super::{CallStatus, ConversionError};
+        include!(concat!(env!("OUT_DIR"), "/messages.models.unigram.rs"));
+        impl TryInto<tokenizers::models::ModelWrapper> for UnigramModel {
+            type Error = ConversionError;
+            fn try_into(self) -> Result<tokenizers::models::ModelWrapper, Self::Error> {
+                let vocab: Vec<(String, f64)> = if self.vocab.is_empty() {
+                    vec![("<unk>".to_string(), 0.0)]
+                } else {
+                    self.vocab
+                        .into_iter()
+                        .map(|item| (item.token, item.score))
+                        .collect()
+                };
+                let mut model = match tokenizers::models::unigram::Unigram::from(
+                    vocab,
+                    Some(self.unk_id.unwrap_or(0) as usize),
+                    self.byte_fallback.unwrap_or(false),
+                ) {
+                    Ok(model) => model,
+                    Err(e) => {
+                        return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
+                    }
+                };
+                if let Some(min_score) = self.min_score {
+                    model.min_score = min_score
+                }
+                Ok(model.into())
+            }
+        }
+    }
+
+    pub(crate) mod word_level {
+        use super::{CallStatus, ConversionError};
+        include!(concat!(env!("OUT_DIR"), "/messages.models.word_level.rs"));
+        impl TryInto<tokenizers::models::ModelWrapper> for WordLevelModel {
+            type Error = ConversionError;
+            fn try_into(self) -> Result<tokenizers::models::ModelWrapper, Self::Error> {
+                let mut d = tokenizers::models::wordlevel::WordLevelBuilder::default();
+                if let Some(vocab) = self.files {
+                    d = d.files(vocab);
+                }
+                if !self.vocab.is_empty() {
+                    d = d.vocab(self.vocab.into_iter().collect());
+                }
+                if let Some(unk_token) = self.unk_token {
+                    d = d.unk_token(unk_token)
+                }
+                Ok(match d.build() {
+                    Ok(res) => res.into(),
+                    Err(e) => {
+                        return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
+                    }
+                })
+            }
+        }
+    }
+
+    pub(crate) mod word_piece {
+        use super::{CallStatus, ConversionError};
+        include!(concat!(env!("OUT_DIR"), "/messages.models.word_piece.rs"));
+        impl TryInto<tokenizers::models::ModelWrapper> for WordPieceModel {
+            type Error = ConversionError;
+            fn try_into(self) -> Result<tokenizers::models::ModelWrapper, Self::Error> {
+                let mut d = tokenizers::models::wordpiece::WordPieceBuilder::default();
+                if let Some(vocab) = self.files {
+                    d = d.files(vocab);
+                }
+                if !self.vocab.is_empty() {
+                    d = d.vocab(
+                        self.vocab
+                            .into_iter()
+                            .collect::<ahash::AHashMap<String, u32>>(),
+                    )
+                }
+                if let Some(unk_token) = self.unk_token {
+                    d = d.unk_token(unk_token)
+                }
+                if let Some(continuing_subword_prefix) = self.continuing_subword_prefix {
+                    d = d.continuing_subword_prefix(continuing_subword_prefix)
+                }
+                if let Some(max_input_chars_per_word) = self.max_input_chars_per_word {
+                    d = d.max_input_chars_per_word(max_input_chars_per_word as usize)
+                }
+                Ok(match d.build() {
+                    Ok(res) => res.into(),
+                    Err(e) => {
+                        return Err((CallStatus::InvalidArgumentsDetails, Some(e.to_string())));
+                    }
+                })
+            }
+        }
+    }
+
+    impl TryInto<tokenizers::models::ModelWrapper> for ModelWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::models::ModelWrapper, Self::Error> {
+            if self.params.is_none() {
+                return Err((
+                    CallStatus::InvalidArgumentsDetails,
+                    Some("Malformed ModelWrapper, you must set a model".to_string()),
+                ));
+            }
+            Ok(match self.params.unwrap() {
+                model_wrapper::Params::Bpe(bpe_model) => bpe_model.try_into()?,
+                model_wrapper::Params::Unigram(unigram_model) => unigram_model.try_into()?,
+                model_wrapper::Params::WordLevel(word_level_model) => {
+                    word_level_model.try_into()?
+                }
+                model_wrapper::Params::WordPiece(word_piece_model) => {
+                    word_piece_model.try_into()?
+                }
+            })
+        }
+    }
 }
 pub(crate) mod trainers {
-    use super::CallStatus;
-    use super::ConversionError;
-
+    use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.trainers.rs"));
 
     fn get_added_tokens(special_tokens: Vec<AddedToken>) -> Vec<tokenizers::AddedToken> {
@@ -577,8 +956,7 @@ pub(crate) mod trainers {
 
     impl Into<tokenizers::models::TrainerWrapper> for BpeTrainer {
         fn into(self) -> tokenizers::models::TrainerWrapper {
-            use tokenizers::models::bpe::BpeTrainer;
-            let mut d = BpeTrainer::default();
+            let mut d = tokenizers::models::bpe::BpeTrainer::default();
             d.min_frequency = self.min_frequency.unwrap_or(d.min_frequency);
             if let Some(vocab_size) = self.vocab_size {
                 d.vocab_size = vocab_size as usize;
@@ -599,10 +977,42 @@ pub(crate) mod trainers {
             d.into()
         }
     }
+
+    impl Into<tokenizers::models::TrainerWrapper> for UnigramTrainer {
+        fn into(self) -> tokenizers::models::TrainerWrapper {
+            let mut d = tokenizers::models::unigram::UnigramTrainer::default();
+            d.show_progress = self.show_progress.unwrap_or(d.show_progress);
+            d.vocab_size = self.vocab_size.unwrap_or(d.vocab_size);
+            d.n_sub_iterations = self.n_sub_iterations.unwrap_or(d.n_sub_iterations);
+            d.shrinking_factor = self.shrinking_factor.unwrap_or(d.shrinking_factor);
+            d.special_tokens = get_added_tokens(self.special_tokens);
+            if let Some(initial_alphabet) = self.initial_alphabet {
+                d.initial_alphabet = initial_alphabet.chars().into_iter().collect();
+            }
+            d.unk_token = self.unk_token;
+            if let Some(max_piece_length) = self.max_piece_length {
+                d.max_piece_length = max_piece_length as usize;
+            }
+            d.into()
+        }
+    }
+
+    impl Into<tokenizers::models::TrainerWrapper> for WordLevelTrainer {
+        fn into(self) -> tokenizers::models::TrainerWrapper {
+            let mut d = tokenizers::models::wordlevel::WordLevelTrainer::default();
+            d.min_frequency = self.min_frequency.unwrap_or(d.min_frequency);
+            if let Some(vocab_size) = self.vocab_size {
+                d.vocab_size = vocab_size as usize;
+            }
+            d.show_progress = self.show_progress.unwrap_or(d.show_progress);
+            d.special_tokens = get_added_tokens(self.special_tokens);
+            d.into()
+        }
+    }
+
     impl Into<tokenizers::models::TrainerWrapper> for WordPieceTrainer {
         fn into(self) -> tokenizers::models::TrainerWrapper {
-            use tokenizers::models::wordpiece::WordPieceTrainer;
-            let mut d = WordPieceTrainer::default();
+            let mut d = tokenizers::models::wordpiece::WordPieceTrainer::default();
             d.set_min_frequency(self.min_frequency.unwrap_or(d.min_frequency()));
             if let Some(vocab_size) = self.vocab_size {
                 d.set_vocab_size(vocab_size as usize);
@@ -624,42 +1034,31 @@ pub(crate) mod trainers {
             d.into()
         }
     }
-    impl Into<tokenizers::models::TrainerWrapper> for WordLevelTrainer {
-        fn into(self) -> tokenizers::models::TrainerWrapper {
-            use tokenizers::models::wordlevel::WordLevelTrainer;
-            let mut d = WordLevelTrainer::default();
-            d.min_frequency = self.min_frequency.unwrap_or(d.min_frequency);
-            if let Some(vocab_size) = self.vocab_size {
-                d.vocab_size = vocab_size as usize;
+
+    impl TryInto<tokenizers::models::TrainerWrapper> for TrainerWrapper {
+        type Error = ConversionError;
+        fn try_into(self) -> Result<tokenizers::models::TrainerWrapper, Self::Error> {
+            if self.params.is_none() {
+                return Err((
+                    CallStatus::InvalidArgumentsDetails,
+                    Some("Malformed TrainerWrapper, you must set a trainer".to_string()),
+                ));
             }
-            d.show_progress = self.show_progress.unwrap_or(d.show_progress);
-            d.special_tokens = get_added_tokens(self.special_tokens);
-            d.into()
+            Ok(match self.params.unwrap() {
+                trainer_wrapper::Params::Bpe(bpe_trainer) => bpe_trainer.into(),
+                trainer_wrapper::Params::Unigram(unigram_trainer) => unigram_trainer.into(),
+                trainer_wrapper::Params::WordLevel(word_level_trainer) => word_level_trainer.into(),
+                trainer_wrapper::Params::WordPiece(word_piece_trainer) => word_piece_trainer.into(),
+            })
         }
     }
-    impl Into<tokenizers::models::TrainerWrapper> for UnigramTrainer {
-        fn into(self) -> tokenizers::models::TrainerWrapper {
-            use tokenizers::models::unigram::UnigramTrainer;
-            let mut d = UnigramTrainer::default();
-            d.show_progress = self.show_progress.unwrap_or(d.show_progress);
-            d.vocab_size = self.vocab_size.unwrap_or(d.vocab_size);
-            d.n_sub_iterations = self.n_sub_iterations.unwrap_or(d.n_sub_iterations);
-            d.shrinking_factor = self.shrinking_factor.unwrap_or(d.shrinking_factor);
-            d.special_tokens = get_added_tokens(self.special_tokens);
-            if let Some(initial_alphabet) = self.initial_alphabet {
-                d.initial_alphabet = initial_alphabet.chars().into_iter().collect();
-            }
-            d.unk_token = self.unk_token;
-            if let Some(max_piece_length) = self.max_piece_length {
-                d.max_piece_length = max_piece_length as usize;
-            }
-            d.into()
-        }
-    }
+}
+pub(crate) mod tokenizer {
+    use super::{CallStatus, ConversionError};
+    include!(concat!(env!("OUT_DIR"), "/messages.tokenizer.rs"));
 
     impl TryInto<tokenizers::utils::truncation::TruncationDirection> for TruncationDirection {
         type Error = ConversionError;
-
         fn try_into(
             self,
         ) -> Result<tokenizers::utils::truncation::TruncationDirection, Self::Error> {
@@ -673,9 +1072,9 @@ pub(crate) mod trainers {
             })
         }
     }
+
     impl TryInto<tokenizers::utils::truncation::TruncationStrategy> for TruncationStrategy {
         type Error = ConversionError;
-
         fn try_into(
             self,
         ) -> Result<tokenizers::utils::truncation::TruncationStrategy, Self::Error> {
@@ -690,9 +1089,9 @@ pub(crate) mod trainers {
             })
         }
     }
+
     impl TryInto<tokenizers::utils::truncation::TruncationParams> for TruncationParams {
         type Error = ConversionError;
-
         fn try_into(self) -> Result<tokenizers::utils::truncation::TruncationParams, Self::Error> {
             use tokenizers::utils::truncation::TruncationParams;
             let mut d = TruncationParams::default();
@@ -711,9 +1110,9 @@ pub(crate) mod trainers {
             Ok(d)
         }
     }
+
     impl TryInto<tokenizers::utils::padding::PaddingDirection> for PaddingDirection {
         type Error = ConversionError;
-
         fn try_into(self) -> Result<tokenizers::utils::padding::PaddingDirection, Self::Error> {
             use tokenizers::utils::padding::PaddingDirection;
             Ok(match self {
@@ -723,17 +1122,17 @@ pub(crate) mod trainers {
             })
         }
     }
+
     impl TryInto<tokenizers::utils::padding::PaddingParams> for PaddingParams {
         type Error = ConversionError;
-
         fn try_into(self) -> Result<tokenizers::utils::padding::PaddingParams, Self::Error> {
-            use super::trainers::PaddingStrategy;
             use tokenizers::utils::padding::{PaddingParams, PaddingStrategy as PS};
             let mut d = PaddingParams::default();
-
             if self.strategy.is_some() {
                 d.strategy = match self.strategy() {
-                    PaddingStrategy::UnknownPaddingStrategy => return Err((CallStatus::UnknownEnumValue, None)),
+                    PaddingStrategy::UnknownPaddingStrategy => {
+                        return Err((CallStatus::UnknownEnumValue, None));
+                    }
                     PaddingStrategy::BatchLongest => PS::BatchLongest,
                     PaddingStrategy::Fixed => {
                         if let Some(fixed_len) = self.fixed_len {
@@ -756,9 +1155,7 @@ pub(crate) mod trainers {
             Ok(d)
         }
     }
-}
-pub(crate) mod tokenizer {
-    include!(concat!(env!("OUT_DIR"), "/messages.tokenizer.rs"));
+
     pub fn encoding_to_message(
         original: &tokenizers::tokenizer::Encoding,
         include_type_ids: bool,

@@ -2,7 +2,15 @@ syntax = "proto3";
 
 package messages.tokenizer;
 
-import "tokenizer_public.proto";
+import "tokenizer/encoding.proto";
+
+// Imports for training a new tokenizer
+import "models/model.proto";
+import "trainers/trainer.proto";
+import "processors/processor.proto";
+import "decoders/decoder.proto";
+import "tokenizer/truncation.proto";
+import "tokenizer/padding.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Tokenizer";
 
@@ -45,4 +53,21 @@ message DecodeResult {
 
 message TokenizerFromFile {
   string file = 1;
+}
+
+message TokenizerFromTrain {
+  // Memory address pointing to a NormalizerWrapper
+  optional uint64 normalizer = 1;
+  // Memory address pointing to a PreTokenizerWrapper
+  optional uint64 pre_tokenizer = 2;
+  messages.models.ModelWrapper model = 3;
+  messages.trainers.TrainerWrapper trainer = 4;
+  optional messages.processors.ProcessorWrapperParams processor = 5;
+  optional messages.decoders.DecoderWrapperParams decoder = 6;
+  optional messages.tokenizer.TruncationParams truncation = 7;
+  optional messages.tokenizer.PaddingParams padding = 8;
+  repeated string files = 9;
+  string save_path = 10;
+  // Defaults: false
+  optional bool pretty = 11;
 }

@@ -1,9 +1,7 @@
 use tokenizers::pre_tokenizer::PreTokenizedString;
 
 use crate::buffer_utils::{get_call_message, set_call_result};
-use crate::messages::pipeline_string::{
-    PipelineStringParams, SplitParams, SplitResult
-};
+use crate::messages::pipeline_string::{PipelineStringParams, SplitParams, SplitResult};
 use crate::messages::{self, CallStatus, tokenizer::Offsets};
 
 #[unsafe(no_mangle)]
@@ -21,7 +19,7 @@ pub unsafe extern "C" fn get_splits(
             return CallStatus::DecodeError.into();
         }
     };
-    let instance = match unsafe { instance_ptr.as_mut() }{
+    let instance = match unsafe { instance_ptr.as_mut() } {
         Some(res) => res,
         None => {
             set_call_result(
@@ -51,10 +49,15 @@ pub unsafe extern "C" fn get_splits(
     let (tokens, offsets) = instance
         .get_splits(offset_ref, offset_type)
         .into_iter()
-        .map(|(str, (start, end), _)| (str.to_string(), Offsets{
-            start: start as u64,
-            end: end as u64,
-        }))
+        .map(|(str, (start, end), _)| {
+            (
+                str.to_string(),
+                Offsets {
+                    start: start as u64,
+                    end: end as u64,
+                },
+            )
+        })
         .unzip();
     let mut res = SplitResult {
         tokens: tokens,
@@ -92,7 +95,7 @@ pub unsafe extern "C" fn new_pipeline_string(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_pipeline_string(ptr: *mut PreTokenizedString){
+pub unsafe extern "C" fn free_pipeline_string(ptr: *mut PreTokenizedString) {
     unsafe {
         drop(Box::from_raw(ptr));
     }

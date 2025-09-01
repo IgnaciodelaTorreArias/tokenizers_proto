@@ -10,26 +10,30 @@ macro_rules! set_empty_output {
     };
 }
 
-pub(crate) fn get_sequence<T>(params: Sequence) -> Result<Vec<T>, ConversionError>
+pub(crate) fn get_sequence<T>(sequence: Sequence) -> Result<Vec<T>, ConversionError>
 where
     T: Clone,
 {
-    if params.addresses.len() == 0 {
+    if sequence.addresses.len() == 0 {
         return Err((
             CallStatus::InvalidArgumentsDetails,
             Some("Sequence cannot be empty".to_string()),
         ));
     }
-    if params.addresses.iter().any(|&p| (p as *const T).is_null()) {
+    if sequence
+        .addresses
+        .iter()
+        .any(|&p| (p as *const T).is_null())
+    {
         return Err((
             CallStatus::InvalidPointerDetails,
             Some("Null pointer found in sequence".to_string()),
         ));
     }
-    let v: Vec<T> = params
+    let v: Vec<T> = sequence
         .addresses
         .into_iter()
-        .map(|p | unsafe { &*(p as *const T) } )
+        .map(|p| unsafe { &*(p as *const T) })
         .cloned()
         .collect();
     Ok(v)

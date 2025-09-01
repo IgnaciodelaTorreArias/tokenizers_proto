@@ -1,18 +1,13 @@
-use tokenizers::models as tkm;
-use tokenizers::models::TrainerWrapper;
 use tokenizers::tokenizer::{
     DecoderWrapper, ModelWrapper, NormalizerWrapper, PostProcessorWrapper, PreTokenizerWrapper,
     TokenizerBuilder, TokenizerImpl,
 };
 
 use crate::buffer_utils::{get_call_message, set_call_result};
-use crate::messages::decoders;
-use crate::messages::decoders::params::Params as d_params;
-use crate::messages::processors;
-use crate::messages::processors::params::Params as p_params;
-use crate::messages::trainers;
-use crate::messages::trainers::params;
-use crate::messages::{self, CallStatus, ConversionError};
+use crate::messages::{
+    self, CallStatus, decoders::get_decoder, processors::get_processor,
+    tokenizer::TokenizerFromTrain,
+};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn tokenizer_from_train(
@@ -28,28 +23,36 @@ pub unsafe extern "C" fn tokenizer_from_train(
     out_ptr: *mut *mut u8,
     out_len: *mut usize,
 ) -> i32 {
-    let params = match get_call_message::<trainers::TrainerParams>(ptr, len) {
+    let params = match get_call_message::<TokenizerFromTrain>(ptr, len) {
         Ok(msg) => msg,
         Err(_) => {
             crate::set_empty_output!(out_ptr, out_len);
             return CallStatus::DecodeError.into();
         }
     };
-    if params.trainer.is_none() {
+    if params.model.is_none() || params.trainer.is_none() {
         crate::set_empty_output!(out_ptr, out_len);
         return CallStatus::EmptyParams.into();
     }
-    let trainer_type = params.trainer.unwrap();
-    if trainer_type.params.is_none(){
-        crate::set_empty_output!(out_ptr, out_len);
-        return CallStatus::EmptyParams.into();
-    }
-    let mut trainer: TrainerWrapper = match_trainer(trainer_type.params.unwrap());
-    let trained_model: ModelWrapper = match trainer {
-        TrainerWrapper::BpeTrainer(_) => tkm::bpe::BPE::default().into(),
-        TrainerWrapper::WordPieceTrainer(_) => tkm::wordpiece::WordPiece::default().into(),
-        TrainerWrapper::WordLevelTrainer(_) => tkm::wordlevel::WordLevel::default().into(),
-        TrainerWrapper::UnigramTrainer(_) => tkm::unigram::Unigram::default().into(),
+    let model: tokenizers::models::ModelWrapper = match params.model.unwrap().try_into() {
+        Ok(res) => res,
+        Err(e) => {
+            match e.1 {
+                Some(e) => set_call_result(messages::Error { details: e }, out_ptr, out_len),
+                None => crate::set_empty_output!(out_ptr, out_len),
+            };
+            return e.0.into();
+        }
+    };
+    let mut trainer: tokenizers::models::TrainerWrapper = match params.trainer.unwrap().try_into() {
+        Ok(res) => res,
+        Err(e) => {
+            match e.1 {
+                Some(e) => set_call_result(messages::Error { details: e }, out_ptr, out_len),
+                None => crate::set_empty_output!(out_ptr, out_len),
+            };
+            return e.0.into();
+        }
     };
     let mut builder: TokenizerBuilder<
         ModelWrapper,
@@ -58,35 +61,35 @@ pub unsafe extern "C" fn tokenizer_from_train(
         PostProcessorWrapper,
         DecoderWrapper,
     > = TokenizerBuilder::new();
-    builder = builder.with_model(trained_model);
+    builder = builder.with_model(model);
     if let Some(normalizer) = params.normalizer {
-        match unsafe { (normalizer as *const NormalizerWrapper).as_ref() } {
-            Some(n) => {builder = builder.with_normalizer(Some(n.clone()))},
+        builder = match unsafe { (normalizer as *const NormalizerWrapper).as_ref() } {
+            Some(n) => builder.with_normalizer(Some(n.clone())),
             None => {
                 set_call_result(
-                messages::Error {
+                    messages::Error {
                         details: "Invalid normalizer pointer".to_string(),
                     },
                     out_ptr,
                     out_len,
                 );
                 return CallStatus::InvalidPointerDetails.into();
-            },
+            }
         }
     }
     if let Some(pre_tokenizer) = params.pre_tokenizer {
-        match unsafe { (pre_tokenizer as *const PreTokenizerWrapper).as_ref() } {
-            Some(pt) => {builder = builder.with_pre_tokenizer(Some(pt.clone()))},
+        builder = match unsafe { (pre_tokenizer as *const PreTokenizerWrapper).as_ref() } {
+            Some(pt) => builder.with_pre_tokenizer(Some(pt.clone())),
             None => {
                 set_call_result(
-                messages::Error {
+                    messages::Error {
                         details: "Invalid pre-tokenizer pointer".to_string(),
                     },
                     out_ptr,
                     out_len,
                 );
                 return CallStatus::InvalidPointerDetails.into();
-            },
+            }
         }
     }
     if let Some(processor) = params.processor {
@@ -177,84 +180,4 @@ pub unsafe extern "C" fn tokenizer_from_train(
     }
     crate::set_empty_output!(out_ptr, out_len);
     CallStatus::Ok.into()
-}
-
-fn match_trainer(selected_trainer: params::Params) -> TrainerWrapper {
-    match selected_trainer {
-        params::Params::BpeTrainer(params) => params.into(),
-        params::Params::WordPieceTrainer(params) => params.into(),
-        params::Params::WordLevelTrainer(params) => params.into(),
-        params::Params::UnigramTrainer(params) => params.into(),
-    }
-}
-
-fn get_processor(
-    processor: processors::ProcessorWrapperParams,
-) -> Result<Option<PostProcessorWrapper>, ConversionError> {
-    if processor.params.len() == 0 {
-        return Ok(None);
-    }
-    let r: Result<Vec<PostProcessorWrapper>, ConversionError> = processor
-        .params
-        .into_iter()
-        .filter_map(|params| params.params)
-        .map(|params| match_processor(params))
-        .collect();
-    Ok(match r {
-        Ok(mut v) => {
-            if v.len() <= 1 {
-                v.pop()
-            } else {
-                Some(tokenizers::processors::sequence::Sequence::new(v).into())
-            }
-        }
-        Err(e) => return Err(e),
-    })
-}
-
-fn match_processor(params: p_params) -> Result<PostProcessorWrapper, ConversionError> {
-    Ok(match params {
-        p_params::RobertaProcessing(params) => params.into(),
-        p_params::BertProcessing(params) => params.into(),
-        p_params::ByteLevel(params) => params.into(),
-        p_params::TemplateProcessing(params) => params.try_into()?,
-    })
-}
-
-fn get_decoder(
-    decoder: decoders::DecoderWrapperParams,
-) -> Result<Option<DecoderWrapper>, ConversionError> {
-    if decoder.params.len() == 0 {
-        return Ok(None);
-    }
-    let r: Result<Vec<DecoderWrapper>, ConversionError> = decoder
-        .params
-        .into_iter()
-        .filter_map(|params| params.params)
-        .map(|params| match_decoder(params))
-        .collect();
-    Ok(match r {
-        Ok(mut v) => {
-            if v.len() <= 1 {
-                v.pop()
-            } else {
-                Some(tokenizers::decoders::sequence::Sequence::new(v).into())
-            }
-        }
-        Err(e) => return Err(e),
-    })
-}
-
-fn match_decoder(params: d_params) -> Result<DecoderWrapper, ConversionError> {
-    Ok(match params {
-        d_params::BpeDecoder(params) => params.into(),
-        d_params::ByteLevel(params) => params.into(),
-        d_params::WordPiece(params) => params.into(),
-        d_params::Metaspace(params) => params.try_into()?,
-        d_params::Ctc(params) => params.into(),
-        d_params::Replace(params) => params.try_into()?,
-        d_params::Fuse(params) => params.into(),
-        d_params::Strip(params) => params.try_into()?,
-        d_params::ByteFallback(params) => params.into(),
-    })
 }

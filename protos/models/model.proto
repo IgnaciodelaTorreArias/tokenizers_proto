@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package messages.models;
+
+import "models/bpe.proto";
+import "models/unigram.proto";
+import "models/word_level.proto";
+import "models/word_piece.proto";
+
+option csharp_namespace = "Tokenizers.HuggingFace.Models";
+
+message ModelWrapper {
+  // requiere
+  oneof params {
+    messages.models.bpe.BpeModel bpe = 1;
+    messages.models.unigram.UnigramModel unigram = 2;
+    messages.models.word_level.WordLevelModel word_level = 3;
+    messages.models.word_piece.WordPieceModel word_piece = 4;
+  }
+}

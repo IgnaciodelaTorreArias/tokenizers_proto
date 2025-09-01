@@ -6,6 +6,6 @@ import "decoders/decoder_public.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Decoders";
 
-message DecoderWrapperParams{
-  repeated Params params = 1;
+message DecoderWrapperParams {
+  repeated DecoderWrapper params = 1;
 }

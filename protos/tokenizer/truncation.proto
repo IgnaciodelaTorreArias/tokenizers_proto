@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package messages.trainers;
+package messages.tokenizer;
 
-option csharp_namespace = "Tokenizers.HuggingFace.Trainers.Truncation";
+option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer.Truncation";
 
 enum TruncationDirection {
   UNKNOWN_TruncationDirection = 0;
@@ -17,7 +17,7 @@ enum TruncationStrategy {
   ONLY_SECOND = 3;
 }
 
-message TruncationParams{
+message TruncationParams {
   // Defaults: RIGHT_TRUNCATION
   optional TruncationDirection direction = 1;
   // Defaults: 512

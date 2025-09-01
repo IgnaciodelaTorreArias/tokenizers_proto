@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package messages.models.word_piece;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Models.WordPiece";
+
+message WordPieceModel {
+  optional string files = 1;
+  map<string, uint32> vocab = 2;
+  // Defaults: "[UNK]"
+  optional string unk_token = 3;
+  // Defaults: "##"
+  optional string continuing_subword_prefix = 4;
+  // Defaults: 100
+  optional uint64 max_input_chars_per_word = 5;
+}
