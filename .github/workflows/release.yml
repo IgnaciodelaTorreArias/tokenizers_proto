@@ -105,9 +105,9 @@ jobs:
       - name: use clang
         run: |
           echo "#!/bin/bash" >> ${{ matrix.runtime }}-gcc
-          echo "clang --target=${{ matrix.runtime }} $@" >> ${{ matrix.runtime }}-gcc
+          echo "clang --target=${{ matrix.runtime }} \$@" >> ${{ matrix.runtime }}-gcc
           echo "#!/bin/bash" >> ${{ matrix.runtime }}-g++
-          echo "clang --target=${{ matrix.runtime }} $@" >> ${{ matrix.runtime }}-g++
+          echo "clang --target=${{ matrix.runtime }} \$@" >> ${{ matrix.runtime }}-g++
           sudo mv ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-gcc
           sudo mv ${{ matrix.runtime }}-g++ /usr/bin/${{ matrix.runtime }}-g++
           sudo chmod 755 /usr/bin/${{ matrix.runtime }}-gcc
