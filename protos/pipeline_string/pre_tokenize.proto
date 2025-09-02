@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package messages.pre_tokenizers;
 
-import "utils.proto";
-
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
 
 message PreTokenizeParams {

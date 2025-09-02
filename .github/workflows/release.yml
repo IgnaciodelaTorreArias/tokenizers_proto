@@ -60,11 +60,18 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            runtime: linux-x64
+            runtime: x86_64-linux-gnu
             flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=x86_64-linux-gnu -C link-arg=-fuse-ld=lld"
           - target: aarch64-unknown-linux-gnu
-            runtime: linux-arm64
+            runtime: aarch64-linux-gnu
             flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=aarch64-linux-gnu -C link-arg=-fuse-ld=lld"
+            extra: libstdc++-13-dev-arm64-cross
+          - target: x86_64-unknown-linux-musl
+            runtime: x86_64-linux-musl
+            flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=x86_64-linux-musl -C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
+          - target: aarch64-unknown-linux-musl
+            runtime: aarch64-linux-musl
+            flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=aarch64-linux-musl -C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -84,7 +91,7 @@ jobs:
       - name: install packages
         run: |
           sudo apt update
-          sudo apt install -y clang unzip gcc-aarch64-linux-gnu g++-aarch64-linux-gnu lld
+          sudo apt install -y clang lld unzip ${{ matrix.extra }}
       - name: install protoc
         run: |
           PROTOC_ZIP="protoc-${{ env.PROTOC_VERSION }}-linux-x86_64.zip"
@@ -95,6 +102,16 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+      - name: use clang
+        run: |
+          echo "#!/bin/bash" >> ${{ matrix.runtime }}-gcc
+          echo "clang --target=${{ matrix.runtime }} $@" >> ${{ matrix.runtime }}-gcc
+          echo "#!/bin/bash" >> ${{ matrix.runtime }}-g++
+          echo "clang --target=${{ matrix.runtime }} $@" >> ${{ matrix.runtime }}-g++
+          sudo mv ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-gcc
+          sudo mv ${{ matrix.runtime }}-g++ /usr/bin/${{ matrix.runtime }}-g++
+          sudo chmod 755 /usr/bin/${{ matrix.runtime }}-gcc
+          sudo chmod 755 /usr/bin/${{ matrix.runtime }}-g++
       - name: build rust .so
         run: ${{ matrix.flags }} cargo build --release --target ${{ matrix.target }}
       - name: upload .so
