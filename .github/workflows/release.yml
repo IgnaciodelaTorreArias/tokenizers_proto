@@ -72,6 +72,7 @@ jobs:
           - target: aarch64-unknown-linux-musl
             runtime: aarch64-linux-musl
             flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=aarch64-linux-musl -C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
+            extra: libstdc++-13-dev-arm64-cross
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,14 +105,11 @@ jobs:
           targets: ${{ matrix.target }}
       - name: use clang
         run: |
-          echo "#!/bin/bash" >> ${{ matrix.runtime }}-gcc
-          echo "clang --target=${{ matrix.runtime }} \$@" >> ${{ matrix.runtime }}-gcc
-          echo "#!/bin/bash" >> ${{ matrix.runtime }}-g++
-          echo "clang --target=${{ matrix.runtime }} \$@" >> ${{ matrix.runtime }}-g++
+          echo '#!/bin/bash' >> ${{ matrix.runtime }}-gcc
+          echo 'clang --target=${{ matrix.runtime }} $@' >> ${{ matrix.runtime }}-gcc
+          sudo chmod 755 ${{ matrix.runtime }}-gcc
+          sudo cp ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-g++
           sudo mv ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-gcc
-          sudo mv ${{ matrix.runtime }}-g++ /usr/bin/${{ matrix.runtime }}-g++
-          sudo chmod 755 /usr/bin/${{ matrix.runtime }}-gcc
-          sudo chmod 755 /usr/bin/${{ matrix.runtime }}-g++
       - name: build rust .so
         run: ${{ matrix.flags }} cargo build --release --target ${{ matrix.target }}
       - name: upload .so
