@@ -16,9 +16,9 @@ jobs:
       matrix:
         include:
           - target: x86_64-pc-windows-msvc
-            runtime: windows-x64
+            runtime: x86_64-windows
           - target: aarch64-pc-windows-msvc
-            runtime: windows-arm64
+            runtime: aarch64-windows
     steps:
       - uses: actions/checkout@v4
         with:
@@ -124,9 +124,9 @@ jobs:
       matrix:
         include:
           - target: x86_64-apple-darwin
-            runtime: darwin-x64
+            runtime: x86_64-darwin
           - target: aarch64-apple-darwin
-            runtime: darwin-arm64
+            runtime: aarch64-darwin
     steps:
       - uses: actions/checkout@v4
         with:
