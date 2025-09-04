@@ -153,7 +153,7 @@ pub unsafe extern "C" fn tokenizer_from_train(
             return CallStatus::TokenizerBuildErrorDetails.into();
         }
     };
-    if let Err(e) = tk.train(&mut trainer, params.files.iter()) {
+    if let Err(e) = tk.train_from_files(&mut trainer, params.files) {
         set_call_result(
             messages::Error {
                 details: e.to_string(),
