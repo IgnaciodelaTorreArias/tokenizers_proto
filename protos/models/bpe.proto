@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.models.bpe;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Models.Bpe";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Models.Bpe";
 
 message Merge{
   string first = 1;

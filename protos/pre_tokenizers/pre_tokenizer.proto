@@ -11,6 +11,7 @@ import "pre_tokenizers/unicode_scripts.proto";
 import "utils.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.PreTokenizers";
 
 message PreTokenizerWrapper {
   // requiere

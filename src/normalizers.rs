@@ -4,7 +4,7 @@ use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::messages::{self, CallStatus, normalizers::NormalizeParams};
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn normalize(
+pub unsafe extern "C" fn lib_tokenizers_normalize(
     instance_ptr: *mut NormalizerWrapper,
     ptr: *const u8,
     len: usize,
@@ -60,7 +60,7 @@ pub unsafe extern "C" fn normalize(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn new_normalizer_wrapper(
+pub unsafe extern "C" fn lib_tokenizers_new_normalizer_wrapper(
     instance_ptr: *mut *mut NormalizerWrapper,
     ptr: *const u8,
     len: usize,
@@ -93,7 +93,7 @@ pub unsafe extern "C" fn new_normalizer_wrapper(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_normalizer_wrapper(ptr: *mut NormalizerWrapper) {
+pub unsafe extern "C" fn lib_tokenizers_free_normalizer_wrapper(ptr: *mut NormalizerWrapper) {
     unsafe {
         drop(Box::from_raw(ptr));
     }

@@ -5,6 +5,7 @@ package messages.pre_tokenizers;
 import "pre_tokenizers/split_delimiter_behavior.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.PreTokenizers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.PreTokenizers";
 
 message Whitespace{}
 

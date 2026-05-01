@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.pre_tokenizers;
 
 option csharp_namespace = "Tokenizers.HuggingFace.PreTokenizers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.PreTokenizers";
 
 // Defines the expected behavior for the delimiter of a Split Pattern
 // When splitting on `'-'` for example, with input `the-final--countdown`:

@@ -5,6 +5,7 @@ package messages.trainers;
 import "trainers/added_token.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Trainers";
 
 message UnigramTrainer {
   // Defaults: true

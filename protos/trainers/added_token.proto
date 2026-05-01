@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.trainers;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Trainers";
 
 // Represent a token added by the user on top of the existing Model vocabulary.
 // AddedToken can be configured to specify the behavior they should have in various situations

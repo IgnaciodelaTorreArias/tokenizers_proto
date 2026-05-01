@@ -5,6 +5,7 @@ package messages.decoders;
 import "decoders/decoder_public.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Decoders";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.Decoders";
 
 message DecoderWrapperParams {
   repeated DecoderWrapper params = 1;

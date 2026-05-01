@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.processors;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Processors";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Processors";
 
 message BertProcessing {
   // Defaults: '[SEP]'

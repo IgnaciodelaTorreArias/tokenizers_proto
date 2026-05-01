@@ -35,6 +35,6 @@ pub(crate) fn set_call_result<T: prost::Message>(
 /// Function must be called after a function that has an output.
 /// With the same address and len the output was pointed to.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_buffer(ptr: *mut u8, len: usize) {
+pub unsafe extern "C" fn lib_tokenizers_free_buffer(ptr: *mut u8, len: usize) {
     unsafe { Vec::from_raw_parts(ptr, len, len) };
 }

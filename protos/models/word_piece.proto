@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.models.word_piece;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Models.WordPiece";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Models.WordPiece";
 
 message WordPieceModel {
   optional string files = 1;

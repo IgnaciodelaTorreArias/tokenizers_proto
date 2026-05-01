@@ -1,6 +1,6 @@
 [package]
 name = "tokenizers_proto"
-version = "1.21.4"
+version = "2.21.4"
 edition = "2024"
 authors = [ "Ignacio de la Torre <ignaciodlta@gmail.com>" ]
 description = "Expose huggingface/tokenizers as a dynamic library with a minimal C ABI using only primitive types (i32, raw pointers) and Protocol Buffers for structured input/output."
@@ -9,17 +9,18 @@ license = "Apache-2.0"
 
 [dependencies]
 ahash = "0.8.12"
-prost = "0.14.1"
+prost = "0.14.3"
 tokenizers = "0.21.4"
 
 [build-dependencies]
-prost-build = "0.14.1"
+prost-build = "0.14.3"
+cbindgen = "0.29.2"
 
 [target.'cfg(windows)'.build-dependencies]
-tauri-winres = "0.3.3"
+tauri-winres = "0.3.6"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "staticlib"]
 
 [profile.release]
 strip = "symbols"

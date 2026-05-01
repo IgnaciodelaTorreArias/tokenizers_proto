@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 env:
-  PROTOC_VERSION: "32.0"
+  PROTOC_VERSION: "34.1"
 
 jobs:
   build-windows:
@@ -20,18 +20,17 @@ jobs:
           - target: aarch64-pc-windows-msvc
             runtime: aarch64-windows
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          submodules: recursive
           ref: v${{ inputs.version }}
       - name: cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}
       - name: cache cargo build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-cargo-target-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
@@ -46,13 +45,65 @@ jobs:
           Expand-Archive -Path $PROTOC_ZIP -DestinationPath "$HOME\.protoc"
       - name: update path
         run: Add-Content $env:GITHUB_PATH "$HOME\.protoc\bin"
-      - name: build rust .dll
+      - name: build
         run: cargo build --release --target ${{ matrix.target }}
-      - name: upload .dll
-        uses: actions/upload-artifact@v4
+      - name: upload
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.runtime }}
-          path: .\target\${{ matrix.target }}\release\tokenizers_proto.dll
+          path: |
+            *.h
+            .\target\${{ matrix.target }}\release\*.dll
+            .\target\${{ matrix.target }}\release\*.lib
+
+  build-windows-gnu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-pc-windows-gnu
+            runtime: x86_64-windows-gnu
+            extra: mingw-w64
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: v${{ inputs.version }}
+      - name: cache cargo registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}
+      - name: cache cargo build
+        uses: actions/cache@v5
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-target-${{ matrix.runtime }}
+      - name: install packages
+        run: |
+          sudo apt update
+          sudo apt install -y unzip ${{ matrix.extra }}
+      - name: install protoc
+        run: |
+          PROTOC_ZIP="protoc-${{ env.PROTOC_VERSION }}-linux-x86_64.zip"
+          curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/v${{ env.PROTOC_VERSION }}/$PROTOC_ZIP"
+          unzip $PROTOC_ZIP -d $HOME/.protoc
+      - name: update path
+        run: echo "$HOME/.protoc/bin" >> $GITHUB_PATH
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: build
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.runtime }}
+          path: |
+            *.h
+            target/${{ matrix.target }}/release/*.dll
+            target/${{ matrix.target }}/release/*.a
 
   build-linux:
     runs-on: ubuntu-latest
@@ -65,26 +116,19 @@ jobs:
           - target: aarch64-unknown-linux-gnu
             runtime: aarch64-linux-gnu
             flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=aarch64-linux-gnu -C link-arg=-fuse-ld=lld"
-            extra: libstdc++-13-dev-arm64-cross
-          - target: x86_64-unknown-linux-musl
-            runtime: x86_64-linux-musl
-            flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=x86_64-linux-musl -C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
-          - target: aarch64-unknown-linux-musl
-            runtime: aarch64-linux-musl
-            flags: RUSTFLAGS="-C linker=/usr/bin/clang -C link-arg=--target=aarch64-linux-musl -C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
-            extra: libstdc++-13-dev-arm64-cross
+            extra: libstdc++-13-dev-arm64-cross 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: v${{ inputs.version }}
       - name: cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}
       - name: cache cargo build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-cargo-target-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
@@ -110,13 +154,16 @@ jobs:
           sudo chmod 755 ${{ matrix.runtime }}-gcc
           sudo cp ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-g++
           sudo mv ${{ matrix.runtime }}-gcc /usr/bin/${{ matrix.runtime }}-gcc
-      - name: build rust .so
+      - name: build
         run: ${{ matrix.flags }} cargo build --release --target ${{ matrix.target }}
-      - name: upload .so
-        uses: actions/upload-artifact@v4
+      - name: upload
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.runtime }}
-          path: target/${{ matrix.target }}/release/libtokenizers_proto.so
+          path: |
+            *.h
+            target/${{ matrix.target }}/release/*.so
+            target/${{ matrix.target }}/release/*.a
 
   build-darwin:
     runs-on: macos-latest
@@ -128,17 +175,17 @@ jobs:
           - target: aarch64-apple-darwin
             runtime: aarch64-darwin
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: v${{ inputs.version }}
       - name: cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo/registry
           key: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-registry-${{ matrix.runtime }}
       - name: cache cargo build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-cargo-target-${{ matrix.runtime }}-${{ hashFiles('**/Cargo.lock') }}
@@ -153,30 +200,34 @@ jobs:
           unzip $PROTOC_ZIP -d $HOME/.protoc
       - name: update path
         run: echo "$HOME/.protoc/bin" >> $GITHUB_PATH
-      - name: build rust .dylib
+      - name: build
         run: cargo build --release --target ${{ matrix.target }}
-      - name: upload .dylib
-        uses: actions/upload-artifact@v4
+      - name: upload
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.runtime }}
-          path: target/${{ matrix.target }}/release/libtokenizers_proto.dylib
+          path: |
+            *.h
+            target/${{ matrix.target }}/release/*.dylib
+            target/${{ matrix.target }}/release/*.a
 
   publish:
     runs-on: ubuntu-latest
     needs:
       - build-windows
+      - build-windows-gnu
       - build-linux
       - build-darwin
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: v${{ inputs.version }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: binaries
-      - run: for dir in binaries/*/; do runtime=${dir%/}; ls $dir | tar -czf "${runtime}.tar.gz" -C $dir -T -; done
+      - run: for dir in binaries/*/; do runtime=${dir%/}; find $dir -type f | tar -czf "${runtime}.tar.gz" --transform='s,^.*/,,' -T -; done
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           name: Release v${{ inputs.version }}
           tag_name: v${{ inputs.version }}

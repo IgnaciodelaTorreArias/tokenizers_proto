@@ -4,6 +4,7 @@ package messages.pre_tokenizers;
 
 // Because can be used as decoder or postprocessor
 option csharp_namespace = "Tokenizers.HuggingFace.Commons";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Commons";
 
 // Provides all the necessary steps to handle the BPE tokenization at the byte-level. Takes care
 // of all the required processing steps to transform a UTF-8 string as needed before and after the

@@ -4,6 +4,7 @@ package messages.pre_tokenizers;
 
 // Because can be used as decoder
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Decoders";
 
 // Enum representing options for the metaspace prepending scheme.
 // FIRST -> Specifies that the scheme should be prepended only once, on the first split

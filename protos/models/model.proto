@@ -8,6 +8,7 @@ import "models/word_level.proto";
 import "models/word_piece.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Models";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Models";
 
 message ModelWrapper {
   // requiere

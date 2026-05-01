@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.tokenizer;
 
 option csharp_namespace = "Tokenizers.HuggingFace.Tokenizer.Padding";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Tokenizer.Padding";
 
 enum PaddingStrategy {
   UNKNOWN_PaddingStrategy = 0;

@@ -4,7 +4,7 @@ use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::messages::{self, CallStatus, pre_tokenizers::PreTokenizeParams};
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn pre_tokenize(
+pub unsafe extern "C" fn lib_tokenizers_pre_tokenize(
     instance_ptr: *mut PreTokenizerWrapper,
     ptr: *const u8,
     len: usize,
@@ -60,7 +60,7 @@ pub unsafe extern "C" fn pre_tokenize(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn new_pre_tokenizer_wrapper(
+pub unsafe extern "C" fn lib_tokenizers_new_pre_tokenizer_wrapper(
     instance_ptr: *mut *mut PreTokenizerWrapper,
     ptr: *const u8,
     len: usize,
@@ -93,7 +93,7 @@ pub unsafe extern "C" fn new_pre_tokenizer_wrapper(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_pre_tokenizer_wrapper(ptr: *mut PreTokenizerWrapper) {
+pub unsafe extern "C" fn lib_tokenizers_free_pre_tokenizer_wrapper(ptr: *mut PreTokenizerWrapper) {
     unsafe {
         drop(Box::from_raw(ptr));
     }

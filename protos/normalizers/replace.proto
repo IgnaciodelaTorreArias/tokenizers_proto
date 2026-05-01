@@ -4,6 +4,7 @@ package messages.normalizers;
 
 // Because can be used as decoder
 option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Decoders";
 
 message Replace{
   // requiere

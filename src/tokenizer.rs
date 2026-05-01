@@ -8,7 +8,7 @@ use crate::messages::tokenizer::*;
 use crate::messages::{self, CallStatus};
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn tokenizer_from_file(
+pub unsafe extern "C" fn lib_tokenizers_tokenizer_from_file(
     instance_ptr: *mut *mut TokenizerImpl<
         ModelWrapper,
         NormalizerWrapper,
@@ -48,7 +48,7 @@ pub unsafe extern "C" fn tokenizer_from_file(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn encode(
+pub unsafe extern "C" fn lib_tokenizers_encode(
     instance_ptr: *const TokenizerImpl<
         ModelWrapper,
         NormalizerWrapper,
@@ -144,7 +144,7 @@ pub unsafe extern "C" fn encode(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn decode(
+pub unsafe extern "C" fn lib_tokenizers_decode(
     instance_ptr: *const TokenizerImpl<
         ModelWrapper,
         NormalizerWrapper,
@@ -201,7 +201,7 @@ pub unsafe extern "C" fn decode(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_tokenizer(
+pub unsafe extern "C" fn lib_tokenizers_free_tokenizer(
     ptr: *mut TokenizerImpl<
         ModelWrapper,
         NormalizerWrapper,

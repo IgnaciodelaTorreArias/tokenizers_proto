@@ -5,7 +5,7 @@ use crate::messages::pipeline_string::{PipelineStringParams, SplitParams, SplitR
 use crate::messages::{self, CallStatus, tokenizer::Offsets};
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn get_splits(
+pub unsafe extern "C" fn lib_tokenizers_get_splits(
     instance_ptr: *mut PreTokenizedString,
     ptr: *const u8,
     len: usize,
@@ -71,7 +71,7 @@ pub unsafe extern "C" fn get_splits(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn new_pipeline_string(
+pub unsafe extern "C" fn lib_tokenizers_new_pipeline_string(
     instance_ptr: *mut *mut PreTokenizedString,
     ptr: *const u8,
     len: usize,
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn new_pipeline_string(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_pipeline_string(ptr: *mut PreTokenizedString) {
+pub unsafe extern "C" fn lib_tokenizers_free_pipeline_string(ptr: *mut PreTokenizedString) {
     unsafe {
         drop(Box::from_raw(ptr));
     }

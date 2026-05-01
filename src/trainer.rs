@@ -10,7 +10,7 @@ use crate::messages::{
 };
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn tokenizer_from_train(
+pub unsafe extern "C" fn lib_tokenizers_tokenizer_from_train(
     instance_ptr: *mut *mut TokenizerImpl<
         ModelWrapper,
         NormalizerWrapper,
