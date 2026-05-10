@@ -10,7 +10,7 @@ void lib_tokenizers_free_buffer(uint8_t *ptr, size_t len);
 
 typedef struct lib_tokenizers_PreTokenizedString PreTokenizedString;
 
-int32_t lib_tokenizers_get_splits(PreTokenizedString *instance_ptr,
+int32_t lib_tokenizers_get_splits(const PreTokenizedString *instance_ptr,
                                   const uint8_t *ptr,
                                   size_t len,
                                   uint8_t **out_ptr,
@@ -26,7 +26,7 @@ void lib_tokenizers_free_pipeline_string(PreTokenizedString *ptr);
 
 typedef struct lib_tokenizers_NormalizerWrapper NormalizerWrapper;
 
-int32_t lib_tokenizers_normalize(NormalizerWrapper *instance_ptr,
+int32_t lib_tokenizers_normalize(const NormalizerWrapper *instance_ptr,
                                  const uint8_t *ptr,
                                  size_t len,
                                  uint8_t **out_ptr,
@@ -42,7 +42,7 @@ void lib_tokenizers_free_normalizer_wrapper(NormalizerWrapper *ptr);
 
 typedef struct lib_tokenizers_PreTokenizerWrapper PreTokenizerWrapper;
 
-int32_t lib_tokenizers_pre_tokenize(PreTokenizerWrapper *instance_ptr,
+int32_t lib_tokenizers_pre_tokenize(const PreTokenizerWrapper *instance_ptr,
                                     const uint8_t *ptr,
                                     size_t len,
                                     uint8_t **out_ptr,
@@ -75,6 +75,18 @@ int32_t lib_tokenizers_decode(const Tokenizer *instance_ptr,
                               size_t len,
                               uint8_t **out_ptr,
                               size_t *out_len);
+
+int32_t lib_tokenizers_set_encode_special_tokens(Tokenizer *instance_ptr,
+                                                 const uint8_t *ptr,
+                                                 size_t len,
+                                                 uint8_t **out_ptr,
+                                                 size_t *out_len);
+
+int32_t lib_tokenizers_add_tokens(Tokenizer *instance_ptr,
+                                  const uint8_t *ptr,
+                                  size_t len,
+                                  uint8_t **out_ptr,
+                                  size_t *out_len);
 
 void lib_tokenizers_free_tokenizer(Tokenizer *ptr);
 
