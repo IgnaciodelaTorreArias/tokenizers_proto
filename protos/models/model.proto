@@ -11,7 +11,7 @@ option csharp_namespace = "Tokenizers.HuggingFace.Models";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Models";
 
 message ModelWrapper {
-  // requiere
+  // required
   oneof params {
     messages.models.bpe.BpeModel bpe = 1;
     messages.models.unigram.UnigramModel unigram = 2;

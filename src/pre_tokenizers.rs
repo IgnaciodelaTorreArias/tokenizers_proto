@@ -5,7 +5,7 @@ use crate::messages::{self, CallStatus, pre_tokenizers::PreTokenizeParams};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn lib_tokenizers_pre_tokenize(
-    instance_ptr: *mut PreTokenizerWrapper,
+    instance_ptr: *const PreTokenizerWrapper,
     ptr: *const u8,
     len: usize,
     out_ptr: *mut *mut u8,

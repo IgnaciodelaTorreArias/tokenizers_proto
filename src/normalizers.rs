@@ -5,7 +5,7 @@ use crate::messages::{self, CallStatus, normalizers::NormalizeParams};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn lib_tokenizers_normalize(
-    instance_ptr: *mut NormalizerWrapper,
+    instance_ptr: *const NormalizerWrapper,
     ptr: *const u8,
     len: usize,
     out_ptr: *mut *mut u8,

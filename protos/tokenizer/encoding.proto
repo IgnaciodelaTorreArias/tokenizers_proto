@@ -18,7 +18,7 @@ message Encoding {
   repeated uint32 type_ids = 2;
   // Tokens associated to each ID
   repeated string tokens = 3;
-  // Indice of the word associated to each token/ID
+  // Indices of the word associated with each token/ID
   repeated uint32 words = 4;
   // Offsets of the token/ID
   repeated Offsets offsets = 5;

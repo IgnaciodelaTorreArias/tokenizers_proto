@@ -7,6 +7,6 @@ option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.De
 
 // Fuse simply fuses all tokens into one big string.
 // It's usually the last decoding step anyway, but this
-// decoder exists incase some decoders need to happen after that
+// decoder exists in case some decoders need to happen after that
 // step
 message Fuse {}

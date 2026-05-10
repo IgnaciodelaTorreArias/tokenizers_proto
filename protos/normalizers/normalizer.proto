@@ -16,7 +16,7 @@ option csharp_namespace = "Tokenizers.HuggingFace.Internal.Normalizers";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.Normalizers";
 
 message NormalizerWrapper {
-  // requiere
+  // required
   oneof params{
     // Bert.proto
     BertNormalizer bert_normalizer = 1;
@@ -48,4 +48,3 @@ message NormalizerWrapper {
     ByteLevel byte_level = 14;
   }
 }
-

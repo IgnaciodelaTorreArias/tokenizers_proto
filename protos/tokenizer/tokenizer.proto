@@ -12,6 +12,8 @@ import "decoders/decoder.proto";
 import "tokenizer/truncation.proto";
 import "tokenizer/padding.proto";
 
+import "trainers/added_token.proto";
+
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Tokenizer";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.Tokenizer";
 
@@ -36,6 +38,8 @@ message EncodeParams {
   optional bool include_attention_mask = 9;
   // Defaults: false
   optional bool include_overflowing = 10;
+  // Defaults: false
+  optional bool char_offsets = 11;
 }
 
 message EncodeResult {
@@ -71,4 +75,13 @@ message TokenizerFromTrain {
   string save_path = 10;
   // Defaults: false
   optional bool pretty = 11;
+}
+
+message AddTokenParams {
+  repeated messages.trainers.AddedToken tokens = 1;
+  bool special = 2;
+}
+
+message SetEncodeSpecialTokensParams {
+  bool value = 1;
 }

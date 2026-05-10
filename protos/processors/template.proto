@@ -17,7 +17,7 @@ message TokenPair {
 }
 
 message Token {
-  // requiere
+  // required
   oneof token {
     SpecialToken special_token = 1;
     TokenPair token_pair = 2;

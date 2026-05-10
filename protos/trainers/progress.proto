@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package messages.trainers;
+
+option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
+option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Trainers";
+
+enum ProgressFormat {
+  UNKNOWN_ProgressFormat = 0;
+  // Interactive terminal progress bars using indicatif
+  INDICATIF = 1;
+  /// Machine-readable JSON lines to stderr for programmatic consumption
+  JSON_LINES = 2;
+  /// No progress output
+  SILENT = 3;
+}

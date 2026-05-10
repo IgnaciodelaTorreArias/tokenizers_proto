@@ -11,7 +11,7 @@ option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Tr
 //   - Whether they should only match single words
 //   - Whether to include any whitespace on its left or right
 message AddedToken {
-  // The content of the added token
+  // The content of the added token (original, as provided by the user)
   string content = 1;
   // Whether this token must be a single word or can break words
   bool single_word = 2;

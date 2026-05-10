@@ -11,7 +11,7 @@ option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Trainers";
 
 message TrainerWrapper {
-  // requiere
+  // required
   oneof params {
     BpeTrainer bpe = 1;
     UnigramTrainer unigram = 2;

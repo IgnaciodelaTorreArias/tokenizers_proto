@@ -847,6 +847,10 @@ pub(crate) mod models {
                 if let Some(min_score) = self.min_score {
                     model.min_score = min_score
                 }
+                model.alpha = self.alpha;
+                if let Some(nbest_size) = self.nbest_size {
+                    model.nbest_size = Some(nbest_size as usize)
+                }
                 Ok(model.into())
             }
         }
@@ -940,7 +944,7 @@ pub(crate) mod trainers {
     use super::{CallStatus, ConversionError};
     include!(concat!(env!("OUT_DIR"), "/messages.trainers.rs"));
 
-    fn get_added_tokens(special_tokens: Vec<AddedToken>) -> Vec<tokenizers::AddedToken> {
+    pub(crate) fn get_added_tokens(special_tokens: Vec<AddedToken>) -> Vec<tokenizers::AddedToken> {
         special_tokens
             .into_iter()
             .map(|at| tokenizers::AddedToken {
@@ -954,6 +958,18 @@ pub(crate) mod trainers {
             .collect()
     }
 
+    impl Into<tokenizers::utils::ProgressFormat> for ProgressFormat {
+        fn into(self) -> tokenizers::utils::ProgressFormat {
+            use tokenizers::utils::ProgressFormat;
+            match self {
+                Self::UnknownProgressFormat => ProgressFormat::Indicatif,
+                Self::Indicatif => ProgressFormat::Indicatif,
+                Self::JsonLines => ProgressFormat::JsonLines,
+                Self::Silent => ProgressFormat::Silent,
+            }
+        }
+    }
+
     impl Into<tokenizers::models::TrainerWrapper> for BpeTrainer {
         fn into(self) -> tokenizers::models::TrainerWrapper {
             let mut d = tokenizers::models::bpe::BpeTrainer::default();
@@ -962,6 +978,7 @@ pub(crate) mod trainers {
                 d.vocab_size = vocab_size as usize;
             };
             d.show_progress = self.show_progress.unwrap_or(d.show_progress);
+            d.progress_format = self.progress_format().into();
             d.special_tokens = get_added_tokens(self.special_tokens);
             if let Some(limit_alphabet) = self.limit_alphabet {
                 d.limit_alphabet = Some(limit_alphabet as usize);

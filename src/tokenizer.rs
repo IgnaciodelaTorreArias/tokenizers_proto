@@ -6,6 +6,7 @@ use tokenizers::tokenizer::{
 use crate::buffer_utils::{get_call_message, set_call_result};
 use crate::messages::tokenizer::*;
 use crate::messages::{self, CallStatus};
+use crate::messages::trainers::{get_added_tokens};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn lib_tokenizers_tokenizer_from_file(
@@ -85,6 +86,7 @@ pub unsafe extern "C" fn lib_tokenizers_encode(
     let include_tokens = params.include_tokens.unwrap_or(false);
     let include_words = params.include_words.unwrap_or(false);
     let include_offsets = params.include_offsets.unwrap_or(false);
+    let char_offsets = params.char_offsets.unwrap_or(false);
     let include_special_tokens_mask = params.include_special_tokens_mask.unwrap_or(false);
     let include_attention_mask = params.include_attention_mask.unwrap_or(false);
     let include_overflowing = params.include_overflowing.unwrap_or(false);
@@ -93,10 +95,14 @@ pub unsafe extern "C" fn lib_tokenizers_encode(
     } else {
         params.input.into()
     };
-    let encoding = if include_offsets {
-        tokenizer.encode(input, params.add_special_tokens)
+    let encoding = if char_offsets { 
+        tokenizer.encode_char_offsets(input, params.add_special_tokens)
     } else {
-        tokenizer.encode_fast(input, params.add_special_tokens)
+        if include_offsets {
+            tokenizer.encode(input, params.add_special_tokens)
+        } else {
+            tokenizer.encode_fast(input, params.add_special_tokens)
+        }
     };
     let mut original = match encoding {
         Ok(res) => res,
@@ -197,6 +203,99 @@ pub unsafe extern "C" fn lib_tokenizers_decode(
         out_ptr,
         out_len,
     );
+    CallStatus::Ok.into()
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn lib_tokenizers_set_encode_special_tokens(
+    instance_ptr: *mut TokenizerImpl<
+        ModelWrapper,
+        NormalizerWrapper,
+        PreTokenizerWrapper,
+        PostProcessorWrapper,
+        DecoderWrapper,
+    >,
+    ptr: *const u8,
+    len: usize,
+    out_ptr: *mut *mut u8,
+    out_len: *mut usize,
+) -> i32 {
+    let params = match get_call_message::<SetEncodeSpecialTokensParams>(ptr, len) {
+        Ok(msg) => msg,
+        Err(_) => {
+            crate::set_empty_output!(out_ptr, out_len);
+            return CallStatus::DecodeError.into();
+        }
+    };
+    let tokenizer = match unsafe { instance_ptr.as_mut() } {
+        Some(res) => res,
+        None => {
+            set_call_result(
+                messages::Error {
+                    details: "Invalid tokenizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidPointerDetails.into();
+        }
+    };
+    tokenizer.set_encode_special_tokens(params.value);
+    CallStatus::Ok.into()
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn lib_tokenizers_add_tokens(
+    instance_ptr: *mut TokenizerImpl<
+        ModelWrapper,
+        NormalizerWrapper,
+        PreTokenizerWrapper,
+        PostProcessorWrapper,
+        DecoderWrapper,
+    >,
+    ptr: *const u8,
+    len: usize,
+    out_ptr: *mut *mut u8,
+    out_len: *mut usize,
+) -> i32 {
+    let params = match get_call_message::<AddTokenParams>(ptr, len) {
+        Ok(msg) => msg,
+        Err(_) => {
+            crate::set_empty_output!(out_ptr, out_len);
+            return CallStatus::DecodeError.into();
+        }
+    };
+    let tokenizer = match unsafe { instance_ptr.as_mut() } {
+        Some(res) => res,
+        None => {
+            set_call_result(
+                messages::Error {
+                    details: "Invalid tokenizer pointer".to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::InvalidPointerDetails.into();
+        }
+    };
+    let res = if params.special {
+        tokenizer.add_special_tokens(get_added_tokens(params.tokens))
+    } else {
+        tokenizer.add_tokens(get_added_tokens(params.tokens))
+    };
+    match res {
+        Ok(res) => res,
+        Err(e) => {
+            set_call_result(
+                messages::Error {
+                    details: e.to_string(),
+                },
+                out_ptr,
+                out_len,
+            );
+            return CallStatus::TokenizerAddedVocabErrorDetails.into();
+        }
+    };
     CallStatus::Ok.into()
 }
 

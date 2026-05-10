@@ -3,6 +3,7 @@ syntax = "proto3";
 package messages.trainers;
 
 import "trainers/added_token.proto";
+import "trainers/progress.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Trainers";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Trainers";
@@ -14,6 +15,8 @@ message BpeTrainer {
   optional uint64 vocab_size = 2;
   // Defaults: true
   optional bool show_progress = 3;
+  // Defaults: INDICATIF
+  optional messages.trainers.ProgressFormat progress_format = 10;
   // Defaults: []
   repeated AddedToken special_tokens = 4;
   // Defaults: None

@@ -6,7 +6,7 @@ use crate::messages::{self, CallStatus, tokenizer::Offsets};
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn lib_tokenizers_get_splits(
-    instance_ptr: *mut PreTokenizedString,
+    instance_ptr: *const PreTokenizedString,
     ptr: *const u8,
     len: usize,
     out_ptr: *mut *mut u8,
@@ -19,7 +19,7 @@ pub unsafe extern "C" fn lib_tokenizers_get_splits(
             return CallStatus::DecodeError.into();
         }
     };
-    let instance = match unsafe { instance_ptr.as_mut() } {
+    let instance = match unsafe { instance_ptr.as_ref() } {
         Some(res) => res,
         None => {
             set_call_result(

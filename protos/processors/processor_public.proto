@@ -11,7 +11,7 @@ option csharp_namespace = "Tokenizers.HuggingFace.Processors";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Processors";
 
 message PostProcessorWrapper {
-  // requiere
+  // required
   oneof params {
     RobertaProcessing roberta_processing = 1;
     BertProcessing bert_processing = 2;

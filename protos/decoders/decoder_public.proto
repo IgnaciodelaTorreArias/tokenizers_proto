@@ -16,7 +16,7 @@ option csharp_namespace = "Tokenizers.HuggingFace.Decoders";
 option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Decoders";
 
 message DecoderWrapper {
-  // requiere
+  // required
   oneof params {
     BpeDecoder bpe_decoder = 1;
     messages.pre_tokenizers.ByteLevel byte_level = 2;

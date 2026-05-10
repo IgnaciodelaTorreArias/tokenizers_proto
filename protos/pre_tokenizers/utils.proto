@@ -17,7 +17,7 @@ message Delimiter{
 }
 
 message Split {
-  // requiere
+  // required
   oneof pattern{
     string string_split = 1;
     string regex_split = 4;
