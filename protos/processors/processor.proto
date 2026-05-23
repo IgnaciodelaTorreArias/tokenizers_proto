@@ -5,7 +5,7 @@ package messages.processors;
 import "processors/processor_public.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Processors";
-option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.Processors";
+option java_package = "io.github.ignaciodelatorrearias.huggingface.tokenizers.internal.processors";
 
 message ProcessorWrapperParams {
   repeated PostProcessorWrapper params = 1;

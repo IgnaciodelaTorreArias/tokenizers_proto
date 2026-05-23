@@ -15,7 +15,7 @@ import "tokenizer/padding.proto";
 import "trainers/added_token.proto";
 
 option csharp_namespace = "Tokenizers.HuggingFace.Internal.Tokenizer";
-option java_package = "io.github.ignaciodelatorrearias.HuggingFace.Tokenizers.Internal.Tokenizer";
+option java_package = "io.github.ignaciodelatorrearias.huggingface.tokenizers.internal.tokenizer";
 
 message EncodeParams {
   string input = 1;
